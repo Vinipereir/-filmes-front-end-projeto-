@@ -1,0 +1,27 @@
+.favoritosContainer {
+  min-height: 100vh;
+  background: linear-gradient(120deg, #181818 70%, #232323 100%);
+  color: #fff;
+  padding: 40px 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+.title {
+  font-size: 2.2rem;
+  font-weight: bold;
+  margin-bottom: 20px;
+  letter-spacing: 2px;
+}
+.lista {
+  width: 80vw;
+  max-width: 1200px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 32px;
+  justify-content: center;
+  background: rgba(30,30,30,0.8);
+  border-radius: 16px;
+  padding: 32px;
+  box-shadow: 0 4px 24px rgba(0,0,0,0.4);
+}
