@@ -1,31 +1,91 @@
+'use client';
+import { useState, useEffect } from 'react';
+import { useSearchParams } from 'next/navigation';
 import styles from './detalhes.module.css';
+import api from '../../services/api';
+import AlertaWrapper from '../../components/AlertaWrapper';
+import ConfiguracaoApi from '../../components/ConfiguracaoApi';
 
 export default function Detalhes() {
-  // Dados fictícios de um filme de exemplo
-  const filme = {
-    titulo: "Inception",
-    tituloOriginal: "Inception",
-    lancamento: "16 Jul 2010",
-    duracao: "2h 28m",
-    generos: ["Ação", "Aventura", "Ficção Científica"],
-    sinopse: "Dom Cobb é um ladrão com a rara habilidade de roubar segredos do inconsciente durante o estado de sono. Isso faz dele um fugitivo no mundo da espionagem corporativa. Cobb tem a chance de se redimir quando recebe uma tarefa final: realizar o inverso, plantar uma ideia na mente de alguém. Se tiver sucesso, será o crime perfeito, mas um inimigo tenta antecipar seus movimentos.",
-    diretor: "Christopher Nolan",
-    imagem: "https://www.themoviedb.org/t/p/w600_and_h900_bestv2/edv5CZvWj09upOsy2Y6IwDhK8bt.jpg",
-    backdrop: "https://www.themoviedb.org/t/p/original/s3TBrRGB1iav7gFOCNx3H31MoES.jpg",
-    avaliacao: 4.7,
-    votos: 22834,
-    elenco: [
-      { nome: "Leonardo DiCaprio", personagem: "Dom Cobb", foto: "https://www.themoviedb.org/t/p/w138_and_h175_face/wo2hJpn04vbtmh0B9utCFdsQhxM.jpg" },
-      { nome: "Joseph Gordon-Levitt", personagem: "Arthur", foto: "https://www.themoviedb.org/t/p/w138_and_h175_face/4U9G4YwTlIEbAymBaseltS38eH4.jpg" },
-      { nome: "Elliot Page", personagem: "Ariadne", foto: "https://www.themoviedb.org/t/p/w138_and_h175_face/wGJZP6rKJ8i9L0cawxFMcRQjTBn.jpg" },
-      { nome: "Tom Hardy", personagem: "Eames", foto: "https://www.themoviedb.org/t/p/w138_and_h175_face/4CR1D9VLWJrbYDzs5pj2ZyTxKgr.jpg" }
-    ],
-    comentarios: [
-      { usuario: "FilmeFan123", texto: "Um dos melhores filmes que já vi! A direção do Nolan é impecável e o roteiro é complexo sem ser confuso.", avaliacao: 5, data: "12/08/2023" },
-      { usuario: "CinemaPro", texto: "Cinematografia incrível e atuações de primeira. O final deixa você pensando por dias.", avaliacao: 4.5, data: "05/03/2023" },
-      { usuario: "MariaFilmes", texto: "Assisti pela terceira vez e ainda encontro detalhes novos. Obra-prima!", avaliacao: 5, data: "22/01/2023" }
-    ]
-  };
+  const searchParams = useSearchParams();
+  const id = searchParams.get('id');
+  
+  const [filme, setFilme] = useState({
+    titulo: "Carregando...",
+    tituloOriginal: "",
+    lancamento: "",
+    duracao: "",
+    generos: [],
+    sinopse: "Carregando informações do filme...",
+    diretor: "",
+    imagem: "https://via.placeholder.com/200x300?text=Carregando",
+    backdrop: "https://via.placeholder.com/1920x1080?text=Carregando",
+    avaliacao: 0,
+    votos: 0,
+    elenco: [],
+    comentarios: []
+  });
+  
+  const [avaliacao, setAvaliacao] = useState(0);
+  const [comentario, setComentario] = useState('');
+  const [carregando, setCarregando] = useState(true);
+  const [erro, setErro] = useState(null);
+  
+  // Buscar detalhes do filme
+  useEffect(() => {
+    const buscarDetalhesFilme = async () => {
+      if (!id) {
+        console.error("ID do filme não encontrado na URL");
+        setErro("ID do filme não especificado");
+        setCarregando(false);
+        return;
+      }
+      
+      console.log(`Tentando buscar detalhes para o filme com ID: ${id}`);
+      
+      try {
+        setCarregando(true);
+        console.log(`Buscando detalhes do filme com ID: ${id}`);
+        
+        // Conectar diretamente ao back-end
+        console.log(`Fazendo requisição para: /movies/${id}`);
+        const response = await api.get(`/movies/${id}`);
+        console.log('Dados recebidos do back-end:', JSON.stringify(response.data));
+        
+        if (response.data) {
+          // Adaptar os dados da API para o formato que esperamos
+          const filmeData = response.data;
+          // Mapear os dados do servidor para o formato esperado pela página
+          console.log('Adaptando dados recebidos:', filmeData);
+          setFilme({
+            titulo: filmeData.titulo || "Título não disponível",
+            tituloOriginal: filmeData.titulo || "",
+            lancamento: filmeData.ano?.toString() || "",
+            duracao: "120 min",
+            generos: [filmeData.genero].filter(Boolean),
+            sinopse: filmeData.sinopse || "Sinopse não disponível",
+            diretor: "Não informado",
+            imagem: filmeData.imagem || "https://via.placeholder.com/200x300?text=Sem+Imagem",
+            backdrop: filmeData.imagem || "https://via.placeholder.com/1920x1080?text=Sem+Imagem+de+Fundo",
+            avaliacao: filmeData.avaliacao || 0,
+            votos: filmeData.reviews || 0,
+            elenco: [],
+            comentarios: []
+          });
+          setErro(null);
+        } else {
+          throw new Error('Resposta inválida do servidor');
+        }
+      } catch (error) {
+        console.error("Erro ao buscar detalhes do filme:", error);
+        setErro("Não foi possível carregar as informações do filme. Verifique a conexão com o servidor API.");
+      } finally {
+        setCarregando(false);
+      }
+    };
+    
+    buscarDetalhesFilme();
+  }, [id]);
 
   return (
     <div style={{ 
@@ -36,195 +96,179 @@ export default function Detalhes() {
       padding: '0', 
       margin: '0'
     }}>
-      {/* Banner do filme */}
-      <div style={{ 
-        position: 'relative', 
-        height: '450px', 
-        width: '100%', 
-        overflow: 'hidden',
-        marginBottom: '2rem'
-      }}>
-        <div style={{
-          position: 'absolute',
-          top: 0,
-          left: 0,
-          width: '100%',
-          height: '100%',
-          backgroundImage: `url(${filme.backdrop})`,
-          backgroundSize: 'cover',
-          backgroundPosition: 'center',
-          filter: 'brightness(0.4)'
-        }}></div>
-        <div style={{
-          position: 'absolute',
-          bottom: 0,
-          left: 0,
-          width: '100%',
-          background: 'linear-gradient(to top, rgba(26, 26, 46, 1) 0%, rgba(26, 26, 46, 0) 100%)',
-          height: '50%'
-        }}></div>
-        <div style={{
-          position: 'absolute',
-          bottom: '2rem',
-          left: '3rem',
-          display: 'flex',
-          alignItems: 'flex-end',
-          gap: '2rem'
-        }}>
-          <img 
-            src={filme.imagem} 
-            alt={filme.titulo} 
+      {carregando ? (
+        <div style={{ textAlign: 'center', padding: '4rem 2rem' }}>
+          <p style={{ fontSize: '1.2rem' }}>Carregando informações do filme...</p>
+          <p style={{ fontSize: '1rem', marginTop: '1rem', color: '#aaa' }}>ID do filme: {id || 'Não especificado'}</p>
+        </div>
+      ) : erro ? (
+        <div style={{ textAlign: 'center', padding: '4rem 2rem', color: '#ff6b6b' }}>
+          <p style={{ fontSize: '1.2rem' }}>{erro}</p>
+          <button 
+            onClick={() => window.history.back()}
             style={{
-              width: '180px',
-              height: '270px',
-              borderRadius: '12px',
-              boxShadow: '0 8px 20px rgba(0, 0, 0, 0.5)'
-            }} 
-          />
-          <div>
-            <h1 style={{ fontSize: '3rem', margin: '0 0 0.5rem 0', fontWeight: 'bold' }}>{filme.titulo}</h1>
-            <div style={{ display: 'flex', gap: '1rem', marginBottom: '1rem', alignItems: 'center' }}>
-              <div style={{ color: '#f0d744', fontSize: '1.2rem', display: 'flex', alignItems: 'center', gap: '0.3rem' }}>
-                <span>★</span>
-                <span>{filme.avaliacao}</span>
+              background: '#4cc9f0',
+              border: 'none',
+              padding: '0.8rem 1.5rem',
+              borderRadius: '30px',
+              color: '#fff',
+              fontWeight: 'bold',
+              cursor: 'pointer',
+              marginTop: '1.5rem'
+            }}
+          >
+            Voltar
+          </button>
+        </div>
+      ) : (
+        <>
+          {/* Banner com imagem do filme */}
+          <div style={{ 
+            position: 'relative', 
+            height: '450px', 
+            width: '100%', 
+            overflow: 'hidden',
+            marginBottom: '2rem'
+          }}>
+            <div style={{
+              position: 'absolute',
+              top: 0,
+              left: 0,
+              width: '100%',
+              height: '100%',
+              backgroundImage: `url(${filme.backdrop})`,
+              backgroundSize: 'cover',
+              backgroundPosition: 'center',
+              filter: 'brightness(0.4)'
+            }}></div>
+            <div style={{
+              position: 'absolute',
+              bottom: 0,
+              left: 0,
+              width: '100%',
+              background: 'linear-gradient(to top, rgba(26, 26, 46, 1) 0%, rgba(26, 26, 46, 0) 100%)',
+              height: '50%'
+            }}></div>
+            <div style={{
+              position: 'absolute',
+              bottom: '2rem',
+              left: '3rem',
+              display: 'flex',
+              alignItems: 'flex-end',
+              gap: '2rem'
+            }}>
+              <img 
+                src={filme.imagem} 
+                alt={filme.titulo} 
+                style={{
+                  width: '180px',
+                  height: '270px',
+                  borderRadius: '12px',
+                  boxShadow: '0 8px 20px rgba(0, 0, 0, 0.5)'
+                }} 
+              />
+              <div>
+                <h1 style={{ fontSize: '3rem', margin: '0 0 0.5rem 0', fontWeight: 'bold' }}>{filme.titulo}</h1>
+                <div style={{ display: 'flex', gap: '1rem', marginBottom: '1rem', alignItems: 'center' }}>
+                  <div style={{ color: '#f0d744', fontSize: '1.2rem', display: 'flex', alignItems: 'center', gap: '0.3rem' }}>
+                    <span>★</span>
+                    <span>{filme.avaliacao}</span>
+                  </div>
+                  <div style={{ color: '#aaa', fontSize: '0.9rem' }}>({filme.votos} votos)</div>
+                  <div style={{ color: '#ddd', fontSize: '0.9rem' }}>Ano: {filme.lancamento}</div>
+                </div>
+                <div style={{ display: 'flex', gap: '0.5rem', marginBottom: '1rem' }}>
+                  {filme.generos.map((genero, idx) => (
+                    <span key={idx} style={{ 
+                      background: 'rgba(76, 201, 240, 0.2)', 
+                      padding: '0.3rem 0.8rem', 
+                      borderRadius: '20px', 
+                      fontSize: '0.9rem'
+                    }}>{genero}</span>
+                  ))}
+                </div>
               </div>
-              <div style={{ color: '#aaa', fontSize: '0.9rem' }}>({filme.votos} votos)</div>
-              <div style={{ color: '#ddd', fontSize: '0.9rem' }}>{filme.lancamento}</div>
-              <div style={{ color: '#ddd', fontSize: '0.9rem' }}>{filme.duracao}</div>
-            </div>
-            <div style={{ display: 'flex', gap: '0.5rem', marginBottom: '1rem' }}>
-              {filme.generos.map((genero, idx) => (
-                <span key={idx} style={{ 
-                  background: 'rgba(76, 201, 240, 0.2)', 
-                  padding: '0.3rem 0.8rem', 
-                  borderRadius: '20px', 
-                  fontSize: '0.9rem'
-                }}>{genero}</span>
-              ))}
             </div>
           </div>
-        </div>
-      </div>
 
-      {/* Conteúdo principal */}
-      <div style={{ padding: '0 3rem 3rem 3rem' }}>
-        <div style={{ 
-          display: 'grid', 
-          gridTemplateColumns: '2fr 1fr', 
-          gap: '2rem', 
-          marginBottom: '2rem'
-        }}>
-          {/* Coluna esquerda */}
-          <div>
-            <h2 style={{ fontSize: '1.5rem', marginBottom: '1rem', color: '#4cc9f0' }}>Sinopse</h2>
-            <p style={{ lineHeight: '1.6', marginBottom: '2rem' }}>{filme.sinopse}</p>
-            
-            <h2 style={{ fontSize: '1.5rem', marginBottom: '1rem', color: '#4cc9f0' }}>Diretor</h2>
-            <p style={{ marginBottom: '2rem' }}>{filme.diretor}</p>
-            
-            <h2 style={{ fontSize: '1.5rem', marginBottom: '1.5rem', color: '#4cc9f0' }}>Elenco Principal</h2>
+          {/* Conteúdo principal */}
+          <div style={{ padding: '0 3rem 3rem 3rem' }}>
             <div style={{ 
               display: 'grid', 
-              gridTemplateColumns: 'repeat(auto-fill, minmax(150px, 1fr))', 
-              gap: '1.5rem',
+              gridTemplateColumns: '1fr', 
+              gap: '2rem', 
               marginBottom: '2rem'
             }}>
-              {filme.elenco.map((ator, idx) => (
-                <div key={idx} style={{ 
-                  background: 'rgba(30, 30, 50, 0.5)',
-                  borderRadius: '10px',
-                  overflow: 'hidden',
-                  boxShadow: '0 4px 12px rgba(0, 0, 0, 0.2)'
-                }}>
-                  <img 
-                    src={ator.foto} 
-                    alt={ator.nome} 
-                    style={{ width: '100%', height: '180px', objectFit: 'cover' }} 
-                  />
-                  <div style={{ padding: '0.7rem' }}>
-                    <div style={{ fontWeight: 'bold', fontSize: '0.9rem' }}>{ator.nome}</div>
-                    <div style={{ fontSize: '0.8rem', color: '#aaa' }}>{ator.personagem}</div>
+              {/* Informações do filme */}
+              <div>
+                <h2 style={{ fontSize: '1.5rem', marginBottom: '1rem', color: '#4cc9f0' }}>Sinopse</h2>
+                <p style={{ lineHeight: '1.6', marginBottom: '2rem' }}>{filme.sinopse}</p>
+                
+                {/* Seção de gênero */}
+                <h2 style={{ fontSize: '1.5rem', marginBottom: '1rem', color: '#4cc9f0' }}>Gênero</h2>
+                <div style={{ display: 'flex', gap: '0.5rem', marginBottom: '2rem' }}>
+                  {filme.generos.map((genero, idx) => (
+                    <span key={idx} style={{ 
+                      background: 'rgba(76, 201, 240, 0.2)', 
+                      padding: '0.5rem 1rem', 
+                      borderRadius: '20px', 
+                      fontSize: '1rem'
+                    }}>{genero}</span>
+                  ))}
+                </div>
+                
+                {/* Avaliação */}
+                <h2 style={{ fontSize: '1.5rem', marginBottom: '1rem', color: '#4cc9f0' }}>Avaliação</h2>
+                <div style={{ marginBottom: '2rem', display: 'flex', alignItems: 'center', gap: '1rem' }}>
+                  <div style={{ 
+                    color: '#f0d744', 
+                    fontSize: '2rem', 
+                    display: 'flex', 
+                    alignItems: 'center', 
+                    gap: '0.5rem',
+                    background: 'rgba(240, 215, 68, 0.1)',
+                    padding: '0.5rem 1rem',
+                    borderRadius: '10px'
+                  }}>
+                    <span>★</span>
+                    <span>{filme.avaliacao}</span>
                   </div>
+                  <div style={{ color: '#ddd', fontSize: '1rem' }}>{filme.votos} avaliações</div>
                 </div>
-              ))}
+                
+                {/* Ano de lançamento */}
+                <h2 style={{ fontSize: '1.5rem', marginBottom: '1rem', color: '#4cc9f0' }}>Ano de Lançamento</h2>
+                <p style={{ marginBottom: '2rem' }}>{filme.lancamento}</p>
+                
+                {/* Botão para voltar */}
+                <div style={{ marginTop: '2rem', textAlign: 'center' }}>
+                  <button 
+                    onClick={() => window.history.back()}
+                    style={{
+                      background: '#4cc9f0',
+                      border: 'none',
+                      padding: '0.8rem 1.5rem',
+                      borderRadius: '30px',
+                      color: '#fff',
+                      fontWeight: 'bold',
+                      cursor: 'pointer',
+                      marginTop: '1.5rem'
+                    }}
+                  >
+                    Voltar para a lista de filmes
+                  </button>
+                </div>
+              </div>
             </div>
           </div>
-          
-          {/* Coluna direita */}
-          <div>
-            <div style={{ 
-              background: 'rgba(30, 30, 50, 0.5)',
-              borderRadius: '12px',
-              padding: '1.5rem',
-              marginBottom: '2rem',
-              boxShadow: '0 4px 16px rgba(0, 0, 0, 0.2)'
-            }}>
-              <h2 style={{ fontSize: '1.5rem', marginBottom: '1.5rem', color: '#4cc9f0' }}>Sua Avaliação</h2>
-              <div style={{ 
-                display: 'flex', 
-                gap: '0.5rem', 
-                fontSize: '2rem', 
-                color: '#aaa',
-                marginBottom: '1.5rem'
-              }}>
-                {"★★★★★".split("").map((star, idx) => (
-                  <span key={idx} style={{ cursor: 'pointer' }}>★</span>
-                ))}
-              </div>
-              <textarea 
-                placeholder="Deixe seu comentário sobre o filme..."
-                style={{
-                  width: '100%',
-                  height: '100px',
-                  padding: '1rem',
-                  borderRadius: '8px',
-                  background: 'rgba(255, 255, 255, 0.1)',
-                  border: 'none',
-                  resize: 'none',
-                  color: '#fff',
-                  marginBottom: '1rem'
-                }}
-              ></textarea>
-              <button style={{
-                background: '#4cc9f0',
-                border: 'none',
-                padding: '0.8rem 1.5rem',
-                borderRadius: '30px',
-                color: '#fff',
-                fontWeight: 'bold',
-                cursor: 'pointer',
-                width: '100%'
-              }}>Enviar Avaliação</button>
-            </div>
-          </div>
-        </div>
-        
-        {/* Comentários */}
-        <div>
-          <h2 style={{ fontSize: '1.5rem', marginBottom: '1.5rem', color: '#4cc9f0' }}>Comentários da Comunidade</h2>
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
-            {filme.comentarios.map((comentario, idx) => (
-              <div key={idx} style={{ 
-                background: 'rgba(30, 30, 50, 0.5)',
-                borderRadius: '12px',
-                padding: '1.5rem',
-                boxShadow: '0 4px 16px rgba(0, 0, 0, 0.2)'
-              }}>
-                <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '0.8rem' }}>
-                  <div style={{ fontWeight: 'bold' }}>{comentario.usuario}</div>
-                  <div style={{ color: '#aaa', fontSize: '0.9rem' }}>{comentario.data}</div>
-                </div>
-                <div style={{ 
-                  color: '#f0d744', 
-                  fontSize: '0.9rem', 
-                  marginBottom: '0.8rem' 
-                }}>{"★".repeat(Math.floor(comentario.avaliacao))}{comentario.avaliacao % 1 === 0.5 ? "½" : ""}</div>
-                <p style={{ lineHeight: '1.5' }}>{comentario.texto}</p>
-              </div>
-            ))}
-          </div>
-        </div>
-      </div>
+        </>
+      )}
+      
+      {/* Componente de alerta de conexão */}
+      <AlertaWrapper />
+      
+      {/* Componente de configuração da API */}
+      <ConfiguracaoApi />
     </div>
   );
 }

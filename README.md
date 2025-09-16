@@ -1,24 +1,45 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
+# Projeto de Catálogo de Filmes
 
-## Getting Started
+Este é um projeto front-end para exibição de um catálogo de filmes, desenvolvido com Next.js.
 
-First, run the development server:
+## Executando o Front-end
+
+Para iniciar o servidor de desenvolvimento do front-end:
 
 ```bash
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+O aplicativo estará disponível em [http://localhost:3000](http://localhost:3000).
 
-You can start editing the page by modifying `app/page.js`. The page auto-updates as you edit the file.
+## Conectando ao Back-end
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+Este front-end precisa se conectar a uma API de filmes para funcionar corretamente. Por padrão, o aplicativo tenta conectar a `http://localhost:4001` e outras portas alternativas.
+
+### Servidor de API para testes
+
+Um servidor API simples para testes está incluído no projeto. Para executá-lo:
+
+```bash
+# Para executar na porta padrão 4001
+node servidor-api-filmes.js
+
+# Ou para executar em uma porta específica
+node servidor-api-filmes.js 3001
+```
+
+O servidor de testes fornecerá dois endpoints:
+- `GET /movies` - Lista todos os filmes
+- `GET /movies/:id` - Obtém detalhes de um filme específico
+
+### Configurando a conexão com o Back-end
+
+Se o back-end estiver rodando em um endereço diferente:
+
+1. Clique no ícone ⚙️ no canto inferior direito da aplicação
+2. Insira a URL correta do back-end (ex: `http://localhost:3001`)
+3. Clique em "Testar Conexão" para verificar
+4. Se a conexão for bem-sucedida, clique em "Salvar" para aplicar as alterações
 
 ## Learn More
 

@@ -1,18 +1,139 @@
+'use client';
+import { useState } from 'react';
+import { useRouter } from 'next/navigation';
 import styles from './home.module.css';
 
 export default function Home() {
-  const destaques = [
-    { titulo: "Interstellar", imagem: "https://www.themoviedb.org/t/p/w600_and_h900_bestv2/gEU2QniE6E77NI6lCU6MxlNBvIx.jpg", lancamento: "2014", rating: 4.8, diretor: "Christopher Nolan" },
-    { titulo: "Oppenheimer", imagem: "https://www.themoviedb.org/t/p/w600_and_h900_bestv2/8Gxv8gSFCU0XGDykEGv7zR1n2ua.jpg", lancamento: "2023", rating: 4.6, diretor: "Christopher Nolan" },
-    { titulo: "Dune", imagem: "https://www.themoviedb.org/t/p/w600_and_h900_bestv2/uzERcfV2rSHNhW5eViQiO9hNiA7.jpg", lancamento: "2021", rating: 4.4, diretor: "Denis Villeneuve" },
-  ];
+  const router = useRouter();
+  const [loginData, setLoginData] = useState({
+    email: '',
+    senha: ''
+  });
+  const [loginErro, setLoginErro] = useState('');
+  const [registroData, setRegistroData] = useState({
+    nome: '',
+    email: '',
+    senha: '',
+    confirmarSenha: ''
+  });
+  const [registroErro, setRegistroErro] = useState('');
+  const [activeTab, setActiveTab] = useState('login'); // 'login' ou 'registro'
 
-  const atividades = [
-    { usuario: "MariaFilmes", acao: "avaliou", filme: "The Matrix", rating: 5, tempo: "há 2 horas" },
-    { usuario: "CinemaPro", acao: "comentou em", filme: "The Shawshank Redemption", comentario: "Obra-prima do cinema!", tempo: "há 5 horas" },
-    { usuario: "FilmeLover", acao: "adicionou aos favoritos", filme: "Pulp Fiction", tempo: "há 1 dia" },
-    { usuario: "JohnCinema", acao: "avaliou", filme: "Interstellar", rating: 4.5, tempo: "há 2 dias" },
-  ];
+  // Atualiza os dados de login
+  const handleLoginChange = (e) => {
+    const { name, value } = e.target;
+    setLoginData(prev => ({
+      ...prev,
+      [name]: value
+    }));
+  };
+
+  // Atualiza os dados de registro
+  const handleRegistroChange = (e) => {
+    const { name, value } = e.target;
+    setRegistroData(prev => ({
+      ...prev,
+      [name]: value
+    }));
+  };
+
+  // Função para fazer login
+  const handleLogin = async (e) => {
+    e.preventDefault();
+    setLoginErro('');
+    
+    try {
+      // Verificar se todos os campos estão preenchidos
+      if (!loginData.email || !loginData.senha) {
+        setLoginErro('Por favor, preencha todos os campos');
+        return;
+      }
+      
+      // Aqui você faria a requisição para o back-end
+      // const response = await api.post('/login', loginData);
+      
+      // Simular login bem-sucedido
+      localStorage.setItem('usuarioLogado', JSON.stringify({
+        email: loginData.email,
+        isAdmin: false,
+        isAnonimo: false
+      }));
+      
+      // Redirecionar para o catálogo
+      console.log('Redirecionando para catálogo após login...');
+      window.location.href = '/catalogo';
+      // Alternativa caso a linha acima não funcione
+      // router.push('/catalogo');
+      
+    } catch (error) {
+      console.error('Erro ao fazer login:', error);
+      setLoginErro('Erro ao fazer login. Verifique suas credenciais.');
+    }
+  };
+
+  // Função para registro
+  const handleRegistro = async (e) => {
+    e.preventDefault();
+    setRegistroErro('');
+    
+    try {
+      // Verificar se todos os campos estão preenchidos
+      if (!registroData.nome || !registroData.email || !registroData.senha || !registroData.confirmarSenha) {
+        setRegistroErro('Por favor, preencha todos os campos');
+        return;
+      }
+      
+      // Verificar se as senhas coincidem
+      if (registroData.senha !== registroData.confirmarSenha) {
+        setRegistroErro('As senhas não coincidem');
+        return;
+      }
+      
+      // Aqui você faria a requisição para o back-end
+      // const response = await api.post('/registro', registroData);
+      
+      // Simular registro bem-sucedido
+      localStorage.setItem('usuarioLogado', JSON.stringify({
+        nome: registroData.nome,
+        email: registroData.email,
+        isAdmin: false,
+        isAnonimo: false
+      }));
+      
+      // Redirecionar para o catálogo
+      console.log('Redirecionando para catálogo após registro...');
+      window.location.href = '/catalogo';
+      // Alternativa caso a linha acima não funcione
+      // router.push('/catalogo');
+      
+    } catch (error) {
+      console.error('Erro ao fazer registro:', error);
+      setRegistroErro('Erro ao fazer registro. Tente novamente.');
+    }
+  };
+
+  // Função para entrar como anônimo
+  const entrarAnonimo = () => {
+    try {
+      // Armazenar informação de usuário anônimo no localStorage
+      localStorage.setItem('usuarioLogado', JSON.stringify({
+        nome: 'Visitante',
+        isAdmin: false,
+        isAnonimo: true
+      }));
+      
+      console.log('Redirecionando para catálogo como anônimo...');
+      
+      // Redirecionar para o catálogo
+      window.location.href = '/catalogo';
+      
+      // Alternativa caso a linha acima não funcione
+      // router.push('/catalogo');
+    } catch (error) {
+      console.error('Erro ao entrar como anônimo:', error);
+      alert('Erro ao entrar como anônimo. Tente novamente.');
+    }
+  };
 
   return (
     <div style={{ 
@@ -20,188 +141,337 @@ export default function Home() {
       minHeight: '100vh', 
       background: 'linear-gradient(135deg, #1a1a2e 0%, #16213e 100%)', 
       color: '#fff', 
-      padding: '32px 42px'
+      padding: '32px 42px',
+      display: 'flex',
+      justifyContent: 'center',
+      alignItems: 'center'
     }}>
-      <div style={{ textAlign: 'center', marginBottom: '3rem' }}>
-        <h1 style={{ fontSize: '3rem', marginBottom: '1rem', color: '#4cc9f0' }}>FilmCommunity</h1>
-        <p style={{ fontSize: '1.2rem', maxWidth: '800px', margin: '0 auto', color: '#ddd' }}>
-          Descubra, avalie e compartilhe suas opiniões sobre filmes e séries com toda a comunidade
-        </p>
-      </div>
-
-      {/* Banner principal */}
       <div style={{ 
-        background: 'rgba(30, 30, 50, 0.5)', 
-        borderRadius: '16px', 
-        padding: '2rem', 
-        marginBottom: '3rem',
-        textAlign: 'center',
-        boxShadow: '0 4px 20px rgba(0, 0, 0, 0.3)'
+        maxWidth: '1200px', 
+        width: '100%',
+        display: 'grid',
+        gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))',
+        gap: '2rem',
+        alignItems: 'center'
       }}>
-        <h2 style={{ fontSize: '1.8rem', marginBottom: '1rem' }}>Explore nosso catálogo</h2>
-        <p style={{ marginBottom: '1.5rem', color: '#aaa', maxWidth: '700px', margin: '0 auto 1.5rem auto' }}>
-          Encontre novos filmes para assistir, compartilhe suas opiniões e conecte-se com outros cinéfilos
-        </p>
-        <div style={{ display: 'flex', justifyContent: 'center', gap: '1rem' }}>
-          <button style={{ 
-            background: '#4cc9f0',
-            border: 'none',
-            padding: '0.8rem 2rem',
-            borderRadius: '30px',
-            color: '#fff',
-            fontWeight: 'bold',
-            cursor: 'pointer',
-            fontSize: '1.1rem'
-          }}>Explorar Catálogo</button>
-          <button style={{ 
-            background: 'transparent',
-            border: '1px solid #4cc9f0',
-            padding: '0.8rem 2rem',
-            borderRadius: '30px',
-            color: '#4cc9f0',
-            fontWeight: 'bold',
-            cursor: 'pointer',
-            fontSize: '1.1rem'
-          }}>Meus Favoritos</button>
+        {/* Coluna da esquerda - Apresentação */}
+        <div>
+          <h1 style={{ fontSize: '3rem', marginBottom: '1rem', color: '#4cc9f0' }}>FilmCommunity</h1>
+          <p style={{ fontSize: '1.2rem', marginBottom: '2rem', lineHeight: '1.6' }}>
+            Sua plataforma para descobrir, avaliar e compartilhar opiniões sobre filmes e séries com toda a comunidade.
+          </p>
+          
+          <div style={{ marginBottom: '2rem' }}>
+            <h2 style={{ fontSize: '1.5rem', marginBottom: '1rem', color: '#4cc9f0' }}>Recursos:</h2>
+            <ul style={{ listStyle: 'none', padding: 0 }}>
+              <li style={{ display: 'flex', alignItems: 'center', marginBottom: '0.8rem' }}>
+                <div style={{ background: 'rgba(76, 201, 240, 0.3)', borderRadius: '50%', width: '30px', height: '30px', display: 'flex', justifyContent: 'center', alignItems: 'center', marginRight: '1rem' }}>✓</div>
+                <span>Acesso a um vasto catálogo de filmes e séries</span>
+              </li>
+              <li style={{ display: 'flex', alignItems: 'center', marginBottom: '0.8rem' }}>
+                <div style={{ background: 'rgba(76, 201, 240, 0.3)', borderRadius: '50%', width: '30px', height: '30px', display: 'flex', justifyContent: 'center', alignItems: 'center', marginRight: '1rem' }}>✓</div>
+                <span>Avalie e comente sobre seus títulos favoritos</span>
+              </li>
+              <li style={{ display: 'flex', alignItems: 'center', marginBottom: '0.8rem' }}>
+                <div style={{ background: 'rgba(76, 201, 240, 0.3)', borderRadius: '50%', width: '30px', height: '30px', display: 'flex', justifyContent: 'center', alignItems: 'center', marginRight: '1rem' }}>✓</div>
+                <span>Descubra recomendações personalizadas</span>
+              </li>
+              <li style={{ display: 'flex', alignItems: 'center' }}>
+                <div style={{ background: 'rgba(76, 201, 240, 0.3)', borderRadius: '50%', width: '30px', height: '30px', display: 'flex', justifyContent: 'center', alignItems: 'center', marginRight: '1rem' }}>✓</div>
+                <span>Conecte-se com outros amantes de cinema</span>
+              </li>
+            </ul>
+          </div>
+          
+          <button 
+            onClick={entrarAnonimo}
+            style={{ 
+              background: 'transparent',
+              border: '2px solid #4cc9f0',
+              padding: '1rem 2rem',
+              borderRadius: '30px',
+              color: '#4cc9f0',
+              fontWeight: 'bold',
+              cursor: 'pointer',
+              fontSize: '1.1rem',
+              width: '100%',
+              transition: 'all 0.3s ease',
+              boxShadow: '0 4px 12px rgba(76, 201, 240, 0.3)'
+            }}
+            onMouseOver={(e) => {
+              e.currentTarget.style.background = 'rgba(76, 201, 240, 0.1)';
+              e.currentTarget.style.boxShadow = '0 6px 16px rgba(76, 201, 240, 0.4)';
+            }}
+            onMouseOut={(e) => {
+              e.currentTarget.style.background = 'transparent';
+              e.currentTarget.style.boxShadow = '0 4px 12px rgba(76, 201, 240, 0.3)';
+            }}
+          >
+            Continuar como Visitante
+          </button>
+          <p style={{ fontSize: '0.85rem', color: '#aaa', marginTop: '0.5rem', textAlign: 'center' }}>
+            Modo visitante tem funcionalidades limitadas (apenas visualização)
+          </p>
         </div>
-      </div>
-
-      {/* Grid de seções */}
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: '2rem', marginBottom: '3rem' }}>
-        {/* Destaques */}
+        
+        {/* Coluna da direita - Login/Registro */}
         <div style={{ 
           background: 'rgba(30, 30, 50, 0.5)', 
           borderRadius: '16px', 
-          padding: '1.5rem', 
-          boxShadow: '0 4px 16px rgba(0, 0, 0, 0.3)'
+          padding: '2rem',
+          boxShadow: '0 4px 20px rgba(0, 0, 0, 0.3)'
         }}>
-          <h2 style={{ fontSize: '1.5rem', marginBottom: '1.5rem', color: '#4cc9f0' }}>Em Destaque</h2>
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
-            {destaques.map((destaque, idx) => (
-              <div key={idx} style={{ 
-                display: 'flex', 
-                gap: '1rem', 
-                background: 'rgba(20, 20, 40, 0.5)', 
-                borderRadius: '10px', 
-                overflow: 'hidden',
+          {/* Abas de Login/Registro */}
+          <div style={{ 
+            display: 'flex', 
+            borderBottom: '1px solid rgba(255, 255, 255, 0.1)',
+            marginBottom: '1.5rem'
+          }}>
+            <button 
+              onClick={() => setActiveTab('login')}
+              style={{ 
+                flex: 1,
+                background: 'transparent',
+                border: 'none',
+                padding: '0.8rem',
+                color: activeTab === 'login' ? '#4cc9f0' : '#aaa',
+                borderBottom: activeTab === 'login' ? '2px solid #4cc9f0' : 'none',
+                fontWeight: activeTab === 'login' ? 'bold' : 'normal',
                 cursor: 'pointer'
-              }}>
-                <img 
-                  src={destaque.imagem} 
-                  alt={destaque.titulo} 
-                  style={{ width: '80px', height: '120px', objectFit: 'cover' }} 
-                />
-                <div style={{ padding: '0.8rem 0.5rem', flex: 1 }}>
-                  <h3 style={{ fontSize: '1.1rem', marginBottom: '0.3rem' }}>{destaque.titulo}</h3>
-                  <div style={{ display: 'flex', gap: '0.5rem', fontSize: '0.8rem', color: '#aaa', marginBottom: '0.5rem' }}>
-                    <span>{destaque.lancamento}</span>
-                    <span>•</span>
-                    <span>Dir: {destaque.diretor}</span>
-                  </div>
-                  <div style={{ color: '#f0d744' }}>★ {destaque.rating}</div>
-                </div>
-              </div>
-            ))}
+              }}
+            >
+              Login
+            </button>
+            <button 
+              onClick={() => setActiveTab('registro')}
+              style={{ 
+                flex: 1,
+                background: 'transparent',
+                border: 'none',
+                padding: '0.8rem',
+                color: activeTab === 'registro' ? '#4cc9f0' : '#aaa',
+                borderBottom: activeTab === 'registro' ? '2px solid #4cc9f0' : 'none',
+                fontWeight: activeTab === 'registro' ? 'bold' : 'normal',
+                cursor: 'pointer'
+              }}
+            >
+              Criar Conta
+            </button>
           </div>
-          <button style={{ 
-            width: '100%', 
-            background: 'transparent',
-            border: '1px solid rgba(76, 201, 240, 0.3)',
-            padding: '0.7rem',
-            borderRadius: '8px',
-            color: '#4cc9f0',
-            marginTop: '1rem',
-            cursor: 'pointer'
-          }}>Ver mais destaques</button>
-        </div>
-        
-        {/* Feed da comunidade */}
-        <div style={{ 
-          background: 'rgba(30, 30, 50, 0.5)', 
-          borderRadius: '16px', 
-          padding: '1.5rem', 
-          boxShadow: '0 4px 16px rgba(0, 0, 0, 0.3)'
-        }}>
-          <h2 style={{ fontSize: '1.5rem', marginBottom: '1.5rem', color: '#4cc9f0' }}>Atividade Recente</h2>
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
-            {atividades.map((atividade, idx) => (
-              <div key={idx} style={{ 
-                background: 'rgba(20, 20, 40, 0.5)', 
-                borderRadius: '10px', 
-                padding: '1rem',
-              }}>
-                <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '0.5rem' }}>
-                  <span style={{ fontWeight: 'bold' }}>{atividade.usuario}</span>
-                  <span style={{ fontSize: '0.8rem', color: '#aaa' }}>{atividade.tempo}</span>
-                </div>
-                <div>
-                  <span>{atividade.acao} </span>
-                  <span style={{ color: '#4cc9f0' }}>{atividade.filme}</span>
-                  {atividade.rating && <span style={{ color: '#f0d744', marginLeft: '0.5rem' }}>★ {atividade.rating}</span>}
-                </div>
-                {atividade.comentario && (
-                  <div style={{ 
-                    marginTop: '0.5rem', 
-                    padding: '0.7rem', 
-                    background: 'rgba(255, 255, 255, 0.05)', 
+          
+          {/* Formulário de Login */}
+          {activeTab === 'login' && (
+            <form onSubmit={handleLogin}>
+              <div style={{ marginBottom: '1.2rem' }}>
+                <label style={{ display: 'block', marginBottom: '0.5rem', fontSize: '0.9rem', color: '#ddd' }}>
+                  Email
+                </label>
+                <input 
+                  type="email" 
+                  name="email"
+                  value={loginData.email}
+                  onChange={handleLoginChange}
+                  style={{ 
+                    width: '100%',
+                    padding: '0.8rem 1rem',
+                    background: 'rgba(255, 255, 255, 0.1)',
+                    border: '1px solid rgba(255, 255, 255, 0.2)',
                     borderRadius: '8px',
-                    fontSize: '0.9rem'
-                  }}>
-                    "{atividade.comentario}"
-                  </div>
-                )}
+                    color: '#fff'
+                  }}
+                  placeholder="Seu email"
+                />
               </div>
-            ))}
-          </div>
-          <button style={{ 
-            width: '100%', 
-            background: 'transparent',
-            border: '1px solid rgba(76, 201, 240, 0.3)',
-            padding: '0.7rem',
-            borderRadius: '8px',
-            color: '#4cc9f0',
-            marginTop: '1rem',
-            cursor: 'pointer'
-          }}>Ver mais atividades</button>
-        </div>
-        
-        {/* Estatísticas */}
-        <div style={{ 
-          background: 'rgba(30, 30, 50, 0.5)', 
-          borderRadius: '16px', 
-          padding: '1.5rem', 
-          boxShadow: '0 4px 16px rgba(0, 0, 0, 0.3)'
-        }}>
-          <h2 style={{ fontSize: '1.5rem', marginBottom: '1.5rem', color: '#4cc9f0' }}>Estatísticas</h2>
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
-            <div style={{ 
-              background: 'rgba(20, 20, 40, 0.5)', 
-              borderRadius: '10px', 
-              padding: '1.2rem',
-              textAlign: 'center'
-            }}>
-              <div style={{ fontSize: '2.5rem', fontWeight: 'bold', color: '#4cc9f0', marginBottom: '0.5rem' }}>1,234</div>
-              <div style={{ color: '#aaa' }}>Filmes no catálogo</div>
-            </div>
-            <div style={{ 
-              background: 'rgba(20, 20, 40, 0.5)', 
-              borderRadius: '10px', 
-              padding: '1.2rem',
-              textAlign: 'center'
-            }}>
-              <div style={{ fontSize: '2.5rem', fontWeight: 'bold', color: '#4cc9f0', marginBottom: '0.5rem' }}>562</div>
-              <div style={{ color: '#aaa' }}>Séries catalogadas</div>
-            </div>
-            <div style={{ 
-              background: 'rgba(20, 20, 40, 0.5)', 
-              borderRadius: '10px', 
-              padding: '1.2rem',
-              textAlign: 'center'
-            }}>
-              <div style={{ fontSize: '2.5rem', fontWeight: 'bold', color: '#4cc9f0', marginBottom: '0.5rem' }}>25,621</div>
-              <div style={{ color: '#aaa' }}>Avaliações da comunidade</div>
-            </div>
-          </div>
+              
+              <div style={{ marginBottom: '1.5rem' }}>
+                <label style={{ display: 'block', marginBottom: '0.5rem', fontSize: '0.9rem', color: '#ddd' }}>
+                  Senha
+                </label>
+                <input 
+                  type="password" 
+                  name="senha"
+                  value={loginData.senha}
+                  onChange={handleLoginChange}
+                  style={{ 
+                    width: '100%',
+                    padding: '0.8rem 1rem',
+                    background: 'rgba(255, 255, 255, 0.1)',
+                    border: '1px solid rgba(255, 255, 255, 0.2)',
+                    borderRadius: '8px',
+                    color: '#fff'
+                  }}
+                  placeholder="Sua senha"
+                />
+              </div>
+              
+              {loginErro && (
+                <div style={{ 
+                  padding: '0.8rem', 
+                  background: 'rgba(255, 87, 87, 0.2)', 
+                  color: '#ff5757', 
+                  borderRadius: '8px',
+                  marginBottom: '1.5rem',
+                  fontSize: '0.9rem'
+                }}>
+                  {loginErro}
+                </div>
+              )}
+              
+              <button 
+                type="submit"
+                style={{ 
+                  width: '100%',
+                  background: '#4cc9f0',
+                  border: 'none',
+                  padding: '0.8rem',
+                  borderRadius: '8px',
+                  color: '#fff',
+                  fontWeight: 'bold',
+                  cursor: 'pointer',
+                  marginBottom: '1rem'
+                }}
+              >
+                Entrar
+              </button>
+              
+              <div style={{ textAlign: 'center', fontSize: '0.9rem', color: '#aaa' }}>
+                <p>Não tem uma conta? <span 
+                  onClick={() => setActiveTab('registro')} 
+                  style={{ color: '#4cc9f0', cursor: 'pointer' }}
+                >
+                  Registre-se
+                </span></p>
+              </div>
+            </form>
+          )}
+          
+          {/* Formulário de Registro */}
+          {activeTab === 'registro' && (
+            <form onSubmit={handleRegistro}>
+              <div style={{ marginBottom: '1.2rem' }}>
+                <label style={{ display: 'block', marginBottom: '0.5rem', fontSize: '0.9rem', color: '#ddd' }}>
+                  Nome
+                </label>
+                <input 
+                  type="text" 
+                  name="nome"
+                  value={registroData.nome}
+                  onChange={handleRegistroChange}
+                  style={{ 
+                    width: '100%',
+                    padding: '0.8rem 1rem',
+                    background: 'rgba(255, 255, 255, 0.1)',
+                    border: '1px solid rgba(255, 255, 255, 0.2)',
+                    borderRadius: '8px',
+                    color: '#fff'
+                  }}
+                  placeholder="Seu nome"
+                />
+              </div>
+              
+              <div style={{ marginBottom: '1.2rem' }}>
+                <label style={{ display: 'block', marginBottom: '0.5rem', fontSize: '0.9rem', color: '#ddd' }}>
+                  Email
+                </label>
+                <input 
+                  type="email" 
+                  name="email"
+                  value={registroData.email}
+                  onChange={handleRegistroChange}
+                  style={{ 
+                    width: '100%',
+                    padding: '0.8rem 1rem',
+                    background: 'rgba(255, 255, 255, 0.1)',
+                    border: '1px solid rgba(255, 255, 255, 0.2)',
+                    borderRadius: '8px',
+                    color: '#fff'
+                  }}
+                  placeholder="Seu email"
+                />
+              </div>
+              
+              <div style={{ marginBottom: '1.2rem' }}>
+                <label style={{ display: 'block', marginBottom: '0.5rem', fontSize: '0.9rem', color: '#ddd' }}>
+                  Senha
+                </label>
+                <input 
+                  type="password" 
+                  name="senha"
+                  value={registroData.senha}
+                  onChange={handleRegistroChange}
+                  style={{ 
+                    width: '100%',
+                    padding: '0.8rem 1rem',
+                    background: 'rgba(255, 255, 255, 0.1)',
+                    border: '1px solid rgba(255, 255, 255, 0.2)',
+                    borderRadius: '8px',
+                    color: '#fff'
+                  }}
+                  placeholder="Crie uma senha"
+                />
+              </div>
+              
+              <div style={{ marginBottom: '1.5rem' }}>
+                <label style={{ display: 'block', marginBottom: '0.5rem', fontSize: '0.9rem', color: '#ddd' }}>
+                  Confirmar Senha
+                </label>
+                <input 
+                  type="password" 
+                  name="confirmarSenha"
+                  value={registroData.confirmarSenha}
+                  onChange={handleRegistroChange}
+                  style={{ 
+                    width: '100%',
+                    padding: '0.8rem 1rem',
+                    background: 'rgba(255, 255, 255, 0.1)',
+                    border: '1px solid rgba(255, 255, 255, 0.2)',
+                    borderRadius: '8px',
+                    color: '#fff'
+                  }}
+                  placeholder="Confirme sua senha"
+                />
+              </div>
+              
+              {registroErro && (
+                <div style={{ 
+                  padding: '0.8rem', 
+                  background: 'rgba(255, 87, 87, 0.2)', 
+                  color: '#ff5757', 
+                  borderRadius: '8px',
+                  marginBottom: '1.5rem',
+                  fontSize: '0.9rem'
+                }}>
+                  {registroErro}
+                </div>
+              )}
+              
+              <button 
+                type="submit"
+                style={{ 
+                  width: '100%',
+                  background: '#4cc9f0',
+                  border: 'none',
+                  padding: '0.8rem',
+                  borderRadius: '8px',
+                  color: '#fff',
+                  fontWeight: 'bold',
+                  cursor: 'pointer',
+                  marginBottom: '1rem'
+                }}
+              >
+                Criar Conta
+              </button>
+              
+              <div style={{ textAlign: 'center', fontSize: '0.9rem', color: '#aaa' }}>
+                <p>Já tem uma conta? <span 
+                  onClick={() => setActiveTab('login')} 
+                  style={{ color: '#4cc9f0', cursor: 'pointer' }}
+                >
+                  Faça login
+                </span></p>
+              </div>
+            </form>
+          )}
         </div>
       </div>
     </div>
