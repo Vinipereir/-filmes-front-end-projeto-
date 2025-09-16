@@ -1,103 +1,71 @@
-import Image from "next/image";
 
 export default function Home() {
-  return (
-    <div className="font-sans grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20">
-      <main className="flex flex-col gap-[32px] row-start-2 items-center sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={180}
-          height={38}
-          priority
-        />
-        <ol className="font-mono list-inside list-decimal text-sm/6 text-center sm:text-left">
-          <li className="mb-2 tracking-[-.01em]">
-            Get started by editing{" "}
-            <code className="bg-black/[.05] dark:bg-white/[.06] font-mono font-semibold px-1 py-0.5 rounded">
-              src/app/page.js
-            </code>
-            .
-          </li>
-          <li className="tracking-[-.01em]">
-            Save and see your changes instantly.
-          </li>
-        </ol>
+  const filmes = [
+    { titulo: "Stranger Things", imagem: "https://www.themoviedb.org/t/p/w600_and_h900_bestv2/x2LSRK2Cm7MZhjluni1msVJ3wDF.jpg", rating: 4.8, reviews: 1423 },
+    { titulo: "Breaking Bad", imagem: "https://www.themoviedb.org/t/p/w600_and_h900_bestv2/ggFHVNu6YYI5L9pCfOacjizRGt.jpg", rating: 4.9, reviews: 2837 },
+    { titulo: "La Casa de Papel", imagem: "https://www.themoviedb.org/t/p/w600_and_h900_bestv2/7xkH1v1bTzQ2JQ1zjTsNM8g4Q4T.jpg", rating: 4.5, reviews: 1654 },
+    { titulo: "The Witcher", imagem: "https://www.themoviedb.org/t/p/w600_and_h900_bestv2/zrPpUlehQaBf8YX2NrVrKK8IEpf.jpg", rating: 4.3, reviews: 1232 },
+    { titulo: "Dark", imagem: "https://www.themoviedb.org/t/p/w600_and_h900_bestv2/apbrbWs8M9lyOpJYU5WXrpFbk1Z.jpg", rating: 4.7, reviews: 983 },
+    { titulo: "Interstellar", imagem: "https://www.themoviedb.org/t/p/w600_and_h900_bestv2/gEU2QniE6E77NI6lCU6MxlNBvIx.jpg", rating: 4.8, reviews: 1823 },
+  ];
 
-        <div className="flex gap-4 items-center flex-col sm:flex-row">
-          <a
-            className="rounded-full border border-solid border-transparent transition-colors flex items-center justify-center bg-foreground text-background gap-2 hover:bg-[#383838] dark:hover:bg-[#ccc] font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 sm:w-auto"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={20}
-              height={20}
-            />
-            Deploy now
-          </a>
-          <a
-            className="rounded-full border border-solid border-black/[.08] dark:border-white/[.145] transition-colors flex items-center justify-center hover:bg-[#f2f2f2] dark:hover:bg-[#1a1a1a] hover:border-transparent font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 w-full sm:w-auto md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Read our docs
-          </a>
+  return (
+    <div style={{ fontFamily: 'Poppins, sans-serif', minHeight: '100vh', background: 'linear-gradient(135deg, #1a1a2e 0%, #16213e 100%)', color: '#fff', padding: '0', margin: '0' }}>
+      <header style={{ 
+        padding: '24px 42px', 
+        display: 'flex', 
+        justifyContent: 'space-between', 
+        alignItems: 'center', 
+        boxShadow: '0 4px 30px rgba(0, 0, 0, 0.1)',
+        background: 'rgba(0, 0, 0, 0.3)',
+        backdropFilter: 'blur(10px)'
+      }}>
+        <div style={{ fontSize: '2.2rem', fontWeight: 'bold', color: '#4cc9f0' }}>
+          FilmCommunity
+        </div>
+        <nav style={{ display: 'flex', gap: '2rem', fontSize: '1rem' }}>
+          <a href="/home" style={{ color: '#fff', textDecoration: 'none', fontWeight: '500', padding: '8px 16px', borderRadius: '20px', transition: 'all 0.3s' }}>Home</a>
+          <a href="/catalogo" style={{ color: '#fff', textDecoration: 'none', fontWeight: '500', padding: '8px 16px', borderRadius: '20px', transition: 'all 0.3s', background: 'rgba(76, 201, 240, 0.2)' }}>Catálogo</a>
+          <a href="/detalhes" style={{ color: '#fff', textDecoration: 'none', fontWeight: '500', padding: '8px 16px', borderRadius: '20px', transition: 'all 0.3s' }}>Detalhes</a>
+          <a href="/favoritos" style={{ color: '#fff', textDecoration: 'none', fontWeight: '500', padding: '8px 16px', borderRadius: '20px', transition: 'all 0.3s' }}>Favoritos</a>
+          <a href="/perfil" style={{ color: '#fff', textDecoration: 'none', fontWeight: '500', padding: '8px 16px', borderRadius: '20px', transition: 'all 0.3s' }}>Perfil</a>
+        </nav>
+      </header>
+      <main style={{ padding: '32px 42px' }}>
+        <h2 style={{ fontSize: '2rem', marginTop: '1rem', marginBottom: '1.5rem', color: '#fff' }}>Filmes e Séries em Destaque</h2>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(200px, 1fr))', gap: '2rem' }}>
+          {filmes.map((filme, idx) => (
+            <div key={idx} style={{ 
+              background: 'rgba(30, 30, 50, 0.5)', 
+              borderRadius: '12px', 
+              overflow: 'hidden', 
+              boxShadow: '0 4px 16px rgba(0, 0, 0, 0.3)', 
+              textAlign: 'center', 
+              paddingBottom: '12px',
+              transition: 'transform 0.3s ease, box-shadow 0.3s ease',
+              cursor: 'pointer'
+            }}>
+              <img src={filme.imagem} alt={filme.titulo} style={{ width: '100%', height: '270px', objectFit: 'cover', display: 'block' }} />
+              <div style={{ padding: '12px 8px 0 8px', fontWeight: 'bold', fontSize: '1.1rem', color: '#4cc9f0' }}>{filme.titulo}</div>
+              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px', padding: '4px 0' }}>
+                <div style={{ color: '#f0d744' }}>★ {filme.rating}</div>
+                <div style={{ color: '#aaa', fontSize: '0.8rem' }}>({filme.reviews} avaliações)</div>
+              </div>
+              <div style={{ display: 'flex', justifyContent: 'center', gap: '8px', padding: '8px 0' }}>
+                <button style={{
+                  background: 'transparent', 
+                  border: '1px solid #4cc9f0', 
+                  padding: '4px 12px', 
+                  borderRadius: '20px', 
+                  color: '#4cc9f0',
+                  cursor: 'pointer'
+                }}>Comentar</button>
+                <button style={{ background: '#4cc9f0', border: 'none', padding: '4px 12px', borderRadius: '20px', color: '#fff', cursor: 'pointer' }}>Favoritar</button>
+              </div>
+            </div>
+          ))}
         </div>
       </main>
-      <footer className="row-start-3 flex gap-[24px] flex-wrap items-center justify-center">
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/file.svg"
-            alt="File icon"
-            width={16}
-            height={16}
-          />
-          Learn
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/window.svg"
-            alt="Window icon"
-            width={16}
-            height={16}
-          />
-          Examples
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/globe.svg"
-            alt="Globe icon"
-            width={16}
-            height={16}
-          />
-          Go to nextjs.org →
-        </a>
-      </footer>
     </div>
   );
 }
