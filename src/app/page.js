@@ -119,7 +119,7 @@ export default function Home() {
         backdropFilter: 'blur(10px)'
       }}>
         <div style={{ fontSize: '2.2rem', fontWeight: 'bold', color: '#4cc9f0' }}>
-          FilmCommunity
+          CineMagic
         </div>
         <nav style={{ display: 'flex', gap: '2rem', fontSize: '1rem' }}>
           <a href="/home" style={{ color: '#fff', textDecoration: 'none', fontWeight: '500', padding: '8px 16px', borderRadius: '20px', transition: 'all 0.3s' }}>Home</a>

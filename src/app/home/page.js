@@ -156,7 +156,7 @@ export default function Home() {
       }}>
         {/* Coluna da esquerda - Apresentação */}
         <div>
-          <h1 style={{ fontSize: '3rem', marginBottom: '1rem', color: '#4cc9f0' }}>FilmCommunity</h1>
+          <h1 style={{ fontSize: '3rem', marginBottom: '1rem', color: '#4cc9f0' }}>CineMagic</h1>
           <p style={{ fontSize: '1.2rem', marginBottom: '2rem', lineHeight: '1.6' }}>
             Sua plataforma para descobrir, avaliar e compartilhar opiniões sobre filmes e séries com toda a comunidade.
           </p>

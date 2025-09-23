@@ -12,8 +12,8 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata = {
-  title: "Catálogo de Filmes",
-  description: "Aplicação para visualização e avaliação de filmes",
+  title: "CineMagic - A Magia do Cinema",
+  description: "Descubra, avalie e compartilhe a magia dos filmes e séries",
 };
 
 export default function RootLayout({ children }) {

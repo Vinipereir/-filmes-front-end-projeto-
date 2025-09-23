@@ -150,7 +150,7 @@ export default function Catalogo() {
       color: '#fff', 
       padding: '32px 42px'
     }}>
-      <h1 style={{ fontSize: '2.5rem', marginBottom: '2rem', color: '#4cc9f0' }}>Catálogo de Filmes e Séries</h1>
+      <h1 style={{ fontSize: '2.5rem', marginBottom: '2rem', color: '#4cc9f0' }}>CineMagic - Catálogo de Filmes e Séries</h1>
       
       {/* Filtros e busca */}
       <div style={{ 

@@ -66,7 +66,7 @@ export default function Simples() {
   
   return (
     <div style={{ padding: '20px', fontFamily: 'Arial, sans-serif' }}>
-      <h1 style={{ textAlign: 'center', marginBottom: '20px' }}>Catálogo de Filmes</h1>
+      <h1 style={{ textAlign: 'center', marginBottom: '20px' }}>CineMagic</h1>
       
       {/* Barra de categorias */}
       <div style={{ 

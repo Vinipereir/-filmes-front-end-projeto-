@@ -151,7 +151,7 @@ export default function Footer() {
         textAlign: 'center'
       }}>
         <p style={{ color: '#888', fontSize: '0.85rem', margin: 0 }}>
-          © 2024 CineMax. Todos os direitos reservados. | Desenvolvido com ❤️ para cinéfilos
+          © 2025 CineMagic. Todos os direitos reservados. | Desenvolvido por Vinicius P. Oliveira
         </p>
       </div>
     </footer>

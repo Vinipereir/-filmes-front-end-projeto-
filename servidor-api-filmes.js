@@ -304,7 +304,8 @@ const servidor = http.createServer((req, res) => {
 });
 
 servidor.listen(PORTA, () => {
-  console.log(`Servidor de API de filmes rodando em http://localhost:${PORTA}`);
+  console.log(`🎬 CineMagic API rodando em http://localhost:${PORTA}`);
+  console.log('✨ A magia do cinema começou!');
   console.log('Rotas disponíveis:');
   console.log(`  http://localhost:${PORTA}/movies`);
   console.log(`  http://localhost:${PORTA}/movies/:id`);
