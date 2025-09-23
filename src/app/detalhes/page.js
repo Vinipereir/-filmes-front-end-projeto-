@@ -5,6 +5,8 @@ import styles from './detalhes.module.css';
 import api from '../../services/api';
 import AlertaWrapper from '../../components/AlertaWrapper';
 import ConfiguracaoApi from '../../components/ConfiguracaoApi';
+import MovieImage from '../../components/MovieImage';
+import BackdropImage from '../../components/BackdropImage';
 
 export default function Detalhes() {
   const searchParams = useSearchParams();
@@ -59,18 +61,18 @@ export default function Detalhes() {
           console.log('Adaptando dados recebidos:', filmeData);
           setFilme({
             titulo: filmeData.titulo || "Título não disponível",
-            tituloOriginal: filmeData.titulo || "",
+            tituloOriginal: filmeData.tituloOriginal || filmeData.titulo || "",
             lancamento: filmeData.ano?.toString() || "",
-            duracao: "120 min",
-            generos: [filmeData.genero].filter(Boolean),
+            duracao: filmeData.duracao || "120 min",
+            generos: filmeData.generos || [filmeData.genero].filter(Boolean),
             sinopse: filmeData.sinopse || "Sinopse não disponível",
-            diretor: "Não informado",
-            imagem: filmeData.imagem || "https://via.placeholder.com/200x300?text=Sem+Imagem",
-            backdrop: filmeData.imagem || "https://via.placeholder.com/1920x1080?text=Sem+Imagem+de+Fundo",
+            diretor: filmeData.diretor || "Não informado",
+            imagem: filmeData.imagem || "https://via.placeholder.com/200x300/1a1a2e/4cc9f0?text=Sem+Imagem",
+            backdrop: filmeData.backdrop || filmeData.imagem || "https://via.placeholder.com/1920x1080/1a1a2e/4cc9f0?text=Sem+Imagem+de+Fundo",
             avaliacao: filmeData.avaliacao || 0,
             votos: filmeData.reviews || 0,
-            elenco: [],
-            comentarios: []
+            elenco: filmeData.elenco || [],
+            comentarios: filmeData.comentarios || []
           });
           setErro(null);
         } else {
@@ -130,17 +132,11 @@ export default function Detalhes() {
             overflow: 'hidden',
             marginBottom: '2rem'
           }}>
-            <div style={{
-              position: 'absolute',
-              top: 0,
-              left: 0,
-              width: '100%',
-              height: '100%',
-              backgroundImage: `url(${filme.backdrop})`,
-              backgroundSize: 'cover',
-              backgroundPosition: 'center',
-              filter: 'brightness(0.4)'
-            }}></div>
+            <BackdropImage
+              src={filme.backdrop}
+              alt={`${filme.titulo} backdrop`}
+              fallbackColor="#1a1a2e"
+            />
             <div style={{
               position: 'absolute',
               bottom: 0,
@@ -157,15 +153,17 @@ export default function Detalhes() {
               alignItems: 'flex-end',
               gap: '2rem'
             }}>
-              <img 
-                src={filme.imagem} 
-                alt={filme.titulo} 
+              <MovieImage
+                src={filme.imagem}
+                alt={filme.titulo}
+                width="180px"
+                height="270px"
                 style={{
-                  width: '180px',
-                  height: '270px',
                   borderRadius: '12px',
                   boxShadow: '0 8px 20px rgba(0, 0, 0, 0.5)'
-                }} 
+                }}
+                fallbackTitle={filme.titulo}
+                loading="eager"
               />
               <div>
                 <h1 style={{ fontSize: '3rem', margin: '0 0 0.5rem 0', fontWeight: 'bold' }}>{filme.titulo}</h1>

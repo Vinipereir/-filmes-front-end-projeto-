@@ -59,11 +59,11 @@ export default function Home() {
         isAnonimo: false
       }));
       
-      // Redirecionar para o catálogo
-      console.log('Redirecionando para catálogo após login...');
-      window.location.href = '/catalogo';
+      // Redirecionar para a página inicial
+      console.log('Redirecionando para página inicial após login...');
+      window.location.href = '/';
       // Alternativa caso a linha acima não funcione
-      // router.push('/catalogo');
+      // router.push('/');
       
     } catch (error) {
       console.error('Erro ao fazer login:', error);
@@ -100,11 +100,11 @@ export default function Home() {
         isAnonimo: false
       }));
       
-      // Redirecionar para o catálogo
-      console.log('Redirecionando para catálogo após registro...');
-      window.location.href = '/catalogo';
+      // Redirecionar para a página inicial
+      console.log('Redirecionando para página inicial após registro...');
+      window.location.href = '/';
       // Alternativa caso a linha acima não funcione
-      // router.push('/catalogo');
+      // router.push('/');
       
     } catch (error) {
       console.error('Erro ao fazer registro:', error);
@@ -122,13 +122,13 @@ export default function Home() {
         isAnonimo: true
       }));
       
-      console.log('Redirecionando para catálogo como anônimo...');
+      console.log('Redirecionando para página inicial como anônimo...');
       
-      // Redirecionar para o catálogo
-      window.location.href = '/catalogo';
+      // Redirecionar para a página inicial
+      window.location.href = '/';
       
       // Alternativa caso a linha acima não funcione
-      // router.push('/catalogo');
+      // router.push('/');
     } catch (error) {
       console.error('Erro ao entrar como anônimo:', error);
       alert('Erro ao entrar como anônimo. Tente novamente.');

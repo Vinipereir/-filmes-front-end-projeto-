@@ -4,6 +4,7 @@ import styles from './catalogo.module.css';
 import api from '../../services/api';
 import AlertaWrapper from '../../components/AlertaWrapper';
 import ConfiguracaoApi from '../../components/ConfiguracaoApi';
+import MovieImage from '../../components/MovieImage';
 import axios from 'axios';
 
 export default function Catalogo() {
@@ -260,7 +261,15 @@ export default function Catalogo() {
               <div style={{ position: 'absolute', top: '10px', right: '10px', background: 'rgba(0,0,0,0.7)', padding: '4px 8px', borderRadius: '12px', fontSize: '0.8rem' }}>
                 {filme.ano}
               </div>
-              <img src={filme.imagem} alt={filme.titulo} style={{ width: '100%', height: '270px', objectFit: 'cover', display: 'block' }} />
+              <MovieImage
+                src={filme.imagem}
+                alt={filme.titulo}
+                width="100%"
+                height="270px"
+                style={{ borderRadius: '12px 12px 0 0' }}
+                fallbackTitle={filme.titulo}
+                loading="lazy"
+              />
               <div style={{ padding: '12px 8px 0 8px', fontWeight: 'bold', fontSize: '1.1rem', color: '#4cc9f0' }}>{filme.titulo}</div>
               <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px', padding: '4px 0' }}>
                 <div style={{ color: '#f0d744' }}>★ {filme.rating}</div>

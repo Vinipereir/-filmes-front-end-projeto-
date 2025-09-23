@@ -1,4 +1,5 @@
 import styles from './favoritos.module.css';
+import MovieImage from '../../components/MovieImage';
 
 export default function Favoritos() {
   const favoritos = [
@@ -75,14 +76,14 @@ export default function Favoritos() {
               boxShadow: '0 4px 16px rgba(0, 0, 0, 0.3)',
               transition: 'transform 0.2s ease'
             }}>
-              <img 
-                src={favorito.imagem} 
-                alt={favorito.titulo} 
-                style={{ 
-                  width: '100px', 
-                  height: '150px', 
-                  objectFit: 'cover'
-                }} 
+              <MovieImage
+                src={favorito.imagem}
+                alt={favorito.titulo}
+                width="100px"
+                height="150px"
+                style={{ borderRadius: '12px 0 0 12px' }}
+                fallbackTitle={favorito.titulo}
+                loading="lazy"
               />
               <div style={{ 
                 display: 'flex', 

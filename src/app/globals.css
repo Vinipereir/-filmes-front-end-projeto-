@@ -1,0 +1,43 @@
+/* Reset CSS para remover margens e bordas padrão */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+/* HTML e body ocupando 100% da tela */
+html {
+  height: 100%;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  height: 100%;
+  margin: 0;
+  padding: 0;
+  background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+  font-family: 'Poppins', sans-serif;
+  color: #fff;
+  overflow-x: hidden;
+}
+
+/* Remover margens padrão de elementos */
+h1, h2, h3, h4, h5, h6, p, ul, ol, li {
+  margin: 0;
+  padding: 0;
+}
+
+/* Root div do Next.js */
+#__next {
+  min-height: 100vh;
+  margin: 0;
+  padding: 0;
+}
+
+/* Container principal */
+main {
+  min-height: 100vh;
+  margin: 0;
+  padding: 0;
+}
