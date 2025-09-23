@@ -1,13 +1,30 @@
+'use client';
+import { useState, useEffect } from 'react';
 import styles from './favoritos.module.css';
 import MovieImage from '../../components/MovieImage';
 import Footer from '../../components/Footer';
 
 export default function Favoritos() {
-  const favoritos = [
-    { titulo: "Inception", imagem: "https://www.themoviedb.org/t/p/w600_and_h900_bestv2/edv5CZvWj09upOsy2Y6IwDhK8bt.jpg", genero: "Ficção Científica", dataSalvo: "15/09/2023", rating: 4.7 },
-    { titulo: "The Shawshank Redemption", imagem: "https://www.themoviedb.org/t/p/w600_and_h900_bestv2/q6y0Go1tsGEsmtFryDOJo3dEmqu.jpg", genero: "Drama", dataSalvo: "10/08/2023", rating: 4.9 },
-    { titulo: "The Dark Knight", imagem: "https://www.themoviedb.org/t/p/w600_and_h900_bestv2/qJ2tW6WMUDux911r6m7haRef0WH.jpg", genero: "Ação", dataSalvo: "05/07/2023", rating: 4.8 },
-  ];
+  const [favoritos, setFavoritos] = useState([]);
+  const [carregando, setCarregando] = useState(true);
+
+  // Carregar favoritos do localStorage
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      const favoritosSalvos = JSON.parse(localStorage.getItem('favoritos') || '[]');
+      setFavoritos(favoritosSalvos);
+      setCarregando(false);
+    }
+  }, []);
+
+  // Função para remover filme dos favoritos
+  const removerFavorito = (id) => {
+    if (typeof window !== 'undefined') {
+      const novosFavoritos = favoritos.filter(filme => filme.id !== id);
+      setFavoritos(novosFavoritos);
+      localStorage.setItem('favoritos', JSON.stringify(novosFavoritos));
+    }
+  };
 
   return (
     <div style={{ 
@@ -66,10 +83,14 @@ export default function Favoritos() {
       </div>
       
       {/* Lista de favoritos */}
-      {favoritos.length > 0 ? (
+      {carregando ? (
+        <div style={{ textAlign: 'center', padding: '2rem', color: '#aaa' }}>
+          Carregando favoritos...
+        </div>
+      ) : favoritos.length > 0 ? (
         <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
           {favoritos.map((favorito, idx) => (
-            <div key={idx} style={{ 
+            <div key={favorito.id || idx} style={{ 
               display: 'flex', 
               background: 'rgba(30, 30, 50, 0.5)', 
               borderRadius: '12px', 
@@ -95,29 +116,63 @@ export default function Favoritos() {
               }}>
                 <div>
                   <h3 style={{ fontSize: '1.2rem', marginBottom: '0.5rem' }}>{favorito.titulo}</h3>
-                  <div style={{ display: 'flex', gap: '1rem', alignItems: 'center', color: '#aaa', fontSize: '0.9rem' }}>
-                    <span>{favorito.genero}</span>
-                    <span>•</span>
-                    <span style={{ color: '#f0d744' }}>★ {favorito.rating}</span>
-                    <span>•</span>
-                    <span>Adicionado em: {favorito.dataSalvo}</span>
+                  <div style={{ display: 'flex', gap: '1rem', alignItems: 'center', color: '#aaa', fontSize: '0.9rem', flexWrap: 'wrap' }}>
+                    {favorito.generos && favorito.generos.length > 0 && (
+                      <>
+                        <span>{favorito.generos[0]}</span>
+                        <span>•</span>
+                      </>
+                    )}
+                    {favorito.avaliacao && (
+                      <>
+                        <span style={{ color: '#f0d744' }}>★ {favorito.avaliacao}</span>
+                        <span>•</span>
+                      </>
+                    )}
+                    {favorito.lancamento && (
+                      <>
+                        <span>Ano: {favorito.lancamento}</span>
+                        <span>•</span>
+                      </>
+                    )}
+                    <span>Nos favoritos</span>
                   </div>
                 </div>
                 <div style={{ display: 'flex', gap: '1rem' }}>
-                  <button style={{ 
-                    background: 'transparent', 
-                    border: 'none', 
-                    color: '#4cc9f0', 
-                    cursor: 'pointer', 
-                    fontSize: '1rem' 
-                  }}>Ver detalhes</button>
-                  <button style={{ 
-                    background: 'transparent', 
-                    border: 'none', 
-                    color: '#ff6b6b', 
-                    cursor: 'pointer', 
-                    fontSize: '1rem' 
-                  }}>Remover</button>
+                  <button 
+                    onClick={() => window.location.href = `/detalhes?id=${favorito.id}`}
+                    style={{ 
+                      background: 'transparent', 
+                      border: 'none', 
+                      color: '#4cc9f0', 
+                      cursor: 'pointer', 
+                      fontSize: '1rem',
+                      padding: '0.5rem 1rem',
+                      borderRadius: '5px',
+                      transition: 'background 0.2s ease'
+                    }}
+                    onMouseOver={(e) => e.target.style.background = 'rgba(76, 201, 240, 0.1)'}
+                    onMouseOut={(e) => e.target.style.background = 'transparent'}
+                  >
+                    Ver detalhes
+                  </button>
+                  <button 
+                    onClick={() => removerFavorito(favorito.id)}
+                    style={{ 
+                      background: 'transparent', 
+                      border: 'none', 
+                      color: '#ff6b6b', 
+                      cursor: 'pointer', 
+                      fontSize: '1rem',
+                      padding: '0.5rem 1rem',
+                      borderRadius: '5px',
+                      transition: 'background 0.2s ease'
+                    }}
+                    onMouseOver={(e) => e.target.style.background = 'rgba(255, 107, 107, 0.1)'}
+                    onMouseOut={(e) => e.target.style.background = 'transparent'}
+                  >
+                    ❤️ Remover
+                  </button>
                 </div>
               </div>
             </div>
@@ -132,15 +187,23 @@ export default function Favoritos() {
         }}>
           <h3 style={{ marginBottom: '1rem', fontSize: '1.5rem' }}>Você ainda não tem favoritos</h3>
           <p style={{ marginBottom: '1.5rem', color: '#aaa' }}>Navegue pelo catálogo e adicione filmes e séries aos favoritos</p>
-          <button style={{ 
-            background: '#4cc9f0',
-            border: 'none',
-            padding: '0.8rem 2rem',
-            borderRadius: '30px',
-            color: '#fff',
-            fontWeight: 'bold',
-            cursor: 'pointer'
-          }}>Explorar Catálogo</button>
+          <button 
+            onClick={() => window.location.href = '/catalogo'}
+            style={{ 
+              background: '#4cc9f0',
+              border: 'none',
+              padding: '0.8rem 2rem',
+              borderRadius: '30px',
+              color: '#fff',
+              fontWeight: 'bold',
+              cursor: 'pointer',
+              transition: 'transform 0.2s ease'
+            }}
+            onMouseOver={(e) => e.target.style.transform = 'scale(1.05)'}
+            onMouseOut={(e) => e.target.style.transform = 'scale(1)'}
+          >
+            Explorar Catálogo
+          </button>
         </div>
       )}
       

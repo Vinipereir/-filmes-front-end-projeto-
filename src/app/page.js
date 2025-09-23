@@ -3,12 +3,10 @@
 import { useState, useEffect } from 'react';
 import AlertaWrapper from '../components/AlertaWrapper';
 import ConfiguracaoApi from '../components/ConfiguracaoApi';
-import LoginForm from '../components/LoginForm';
 import Footer from '../components/Footer';
 import api from '../services/api';
 
 export default function Home() {
-  const [showLogin, setShowLogin] = useState(false);
   const [filmes, setFilmes] = useState([]);
   const [filmesExibidos, setFilmesExibidos] = useState([]);
   const [carregando, setCarregando] = useState(true);
@@ -33,12 +31,17 @@ export default function Home() {
         const dadosFormatados = Array.isArray(response.data) 
           ? response.data.map(filme => ({
               id: filme.id,
-              titulo: filme.titulo || filme.nome || filme.title || 'Título não disponível',
-              imagem: filme.imagem || filme.poster || filme.poster_path || 'https://via.placeholder.com/200x300?text=Sem+Imagem',
-              genero: filme.genero || filme.categoria || filme.genre || 'Não categorizado',
-              ano: filme.ano || filme.lancamento || filme.release_date || new Date().getFullYear(),
+              titulo: filme.title || filme.titulo || filme.nome || 'Título não disponível',
+              imagem: filme.imageUrl || filme.imagem || filme.poster || filme.posterUrl || filme.poster_path || 'https://via.placeholder.com/200x300?text=Sem+Imagem',
+              genero: filme.genre || filme.genero || filme.categoria || 'Não categorizado',
+              generos: filme.generos || (filme.genre ? [filme.genre] : []),
+              ano: filme.releaseDate ? new Date(filme.releaseDate).getFullYear() : filme.ano || filme.lancamento || filme.release_date || new Date().getFullYear(),
               rating: filme.rating || filme.avaliacao || filme.vote_average || Math.floor(Math.random() * 5) + 1,
-              reviews: filme.reviews || filme.avaliacoes || filme.vote_count || Math.floor(Math.random() * 1000) + 1
+              reviews: filme.reviews || filme.avaliacoes || filme.vote_count || Math.floor(Math.random() * 1000) + 1,
+              sinopse: filme.synopsis || filme.sinopse || filme.descricao || 'Sinopse não disponível',
+              lancamento: filme.releaseDate || filme.lancamento || filme.ano || filme.release_date || new Date().getFullYear(),
+              avaliacao: filme.avaliacao || filme.rating || filme.vote_average || 0,
+              backdrop: filme.backdrop || filme.backdropUrl || filme.imageUrl || filme.imagem
             }))
           : [];
         
@@ -122,22 +125,6 @@ export default function Home() {
           <a href="/catalogo" style={{ color: '#fff', textDecoration: 'none', fontWeight: '500', padding: '8px 16px', borderRadius: '20px', transition: 'all 0.3s', background: 'rgba(76, 201, 240, 0.2)' }}>Catálogo</a>
           <a href="/detalhes" style={{ color: '#fff', textDecoration: 'none', fontWeight: '500', padding: '8px 16px', borderRadius: '20px', transition: 'all 0.3s' }}>Detalhes</a>
           <a href="/favoritos" style={{ color: '#fff', textDecoration: 'none', fontWeight: '500', padding: '8px 16px', borderRadius: '20px', transition: 'all 0.3s' }}>Favoritos</a>
-          <button 
-            onClick={() => setShowLogin(!showLogin)} 
-            style={{ 
-              color: '#fff', 
-              textDecoration: 'none', 
-              fontWeight: '500', 
-              padding: '8px 16px', 
-              borderRadius: '20px', 
-              transition: 'all 0.3s',
-              background: 'rgba(76, 201, 240, 0.4)',
-              border: 'none',
-              cursor: 'pointer'
-            }}
-          >
-            {showLogin ? 'Fechar Login' : 'Login JWT'}
-          </button>
           <a href="/perfil" style={{ color: '#fff', textDecoration: 'none', fontWeight: '500', padding: '8px 16px', borderRadius: '20px', transition: 'all 0.3s' }}>Perfil</a>
         </nav>
       </header>
@@ -238,9 +225,6 @@ export default function Home() {
       
       {/* Componente de configuração da API */}
       <ConfiguracaoApi />
-      
-      {/* Componente de login JWT */}
-      {showLogin && <LoginForm />}
     </div>
   );
 }

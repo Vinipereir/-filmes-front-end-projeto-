@@ -33,6 +33,80 @@ export default function Detalhes() {
   const [comentario, setComentario] = useState('');
   const [carregando, setCarregando] = useState(true);
   const [erro, setErro] = useState(null);
+  const [isFavorito, setIsFavorito] = useState(false);
+  const [minhaAvaliacao, setMinhaAvaliacao] = useState(0);
+  const [avaliacaoHover, setAvaliacaoHover] = useState(0);
+  
+  // Verificar se filme está nos favoritos
+  useEffect(() => {
+    if (filme.titulo !== "Carregando..." && typeof window !== 'undefined') {
+      const favoritos = JSON.parse(localStorage.getItem('favoritos') || '[]');
+      const filmeEstaNosFavoritos = favoritos.some(fav => fav.id === id);
+      setIsFavorito(filmeEstaNosFavoritos);
+      
+      // Carregar avaliação do usuário
+      const avaliacoes = JSON.parse(localStorage.getItem('avaliacoes') || '[]');
+      const avaliacaoExistente = avaliacoes.find(av => av.filmeId === id);
+      if (avaliacaoExistente) {
+        setMinhaAvaliacao(avaliacaoExistente.nota);
+      }
+    }
+  }, [filme, id]);
+  
+  // Função para salvar avaliação
+  const salvarAvaliacao = (nota) => {
+    if (typeof window !== 'undefined') {
+      let avaliacoes = JSON.parse(localStorage.getItem('avaliacoes') || '[]');
+      
+      // Remover avaliação anterior se existir
+      avaliacoes = avaliacoes.filter(av => av.filmeId !== id);
+      
+      // Adicionar nova avaliação
+      const novaAvaliacao = {
+        filmeId: id,
+        titulo: filme.titulo,
+        imagem: filme.imagem,
+        nota: nota,
+        data: new Date().toISOString(),
+        generos: filme.generos
+      };
+      
+      avaliacoes.push(novaAvaliacao);
+      localStorage.setItem('avaliacoes', JSON.stringify(avaliacoes));
+      setMinhaAvaliacao(nota);
+      
+      console.log(`Avaliação salva: ${nota} estrelas para ${filme.titulo}`);
+    }
+  };
+  
+  // Função para alternar favorito
+  const toggleFavorito = () => {
+    if (typeof window !== 'undefined') {
+      let favoritos = JSON.parse(localStorage.getItem('favoritos') || '[]');
+      
+      if (isFavorito) {
+        // Remover dos favoritos
+        favoritos = favoritos.filter(fav => fav.id !== id);
+        setIsFavorito(false);
+        console.log('Filme removido dos favoritos');
+      } else {
+        // Adicionar aos favoritos
+        const filmeParaFavoritos = {
+          id: id,
+          titulo: filme.titulo,
+          imagem: filme.imagem,
+          avaliacao: filme.avaliacao,
+          lancamento: filme.lancamento,
+          generos: filme.generos
+        };
+        favoritos.push(filmeParaFavoritos);
+        setIsFavorito(true);
+        console.log('Filme adicionado aos favoritos');
+      }
+      
+      localStorage.setItem('favoritos', JSON.stringify(favoritos));
+    }
+  };
   
   // Buscar detalhes do filme
   useEffect(() => {
@@ -61,17 +135,17 @@ export default function Detalhes() {
           // Mapear os dados do servidor para o formato esperado pela página
           console.log('Adaptando dados recebidos:', filmeData);
           setFilme({
-            titulo: filmeData.titulo || "Título não disponível",
-            tituloOriginal: filmeData.tituloOriginal || filmeData.titulo || "",
-            lancamento: filmeData.ano?.toString() || "",
+            titulo: filmeData.title || filmeData.titulo || "Título não disponível",
+            tituloOriginal: filmeData.tituloOriginal || filmeData.title || filmeData.titulo || "",
+            lancamento: filmeData.releaseDate ? new Date(filmeData.releaseDate).getFullYear().toString() : filmeData.ano?.toString() || "",
             duracao: filmeData.duracao || "120 min",
-            generos: filmeData.generos || [filmeData.genero].filter(Boolean),
-            sinopse: filmeData.sinopse || "Sinopse não disponível",
+            generos: filmeData.generos || (filmeData.genre ? [filmeData.genre] : [filmeData.genero]).filter(Boolean),
+            sinopse: filmeData.synopsis || filmeData.sinopse || "Sinopse não disponível",
             diretor: filmeData.diretor || "Não informado",
-            imagem: filmeData.imagem || "https://via.placeholder.com/200x300/1a1a2e/4cc9f0?text=Sem+Imagem",
-            backdrop: filmeData.backdrop || filmeData.imagem || "https://via.placeholder.com/1920x1080/1a1a2e/4cc9f0?text=Sem+Imagem+de+Fundo",
-            avaliacao: filmeData.avaliacao || 0,
-            votos: filmeData.reviews || 0,
+            imagem: filmeData.imageUrl || filmeData.imagem || filmeData.poster || "https://via.placeholder.com/200x300/1a1a2e/4cc9f0?text=Sem+Imagem",
+            backdrop: filmeData.backdrop || filmeData.backdropUrl || filmeData.imageUrl || filmeData.imagem || "https://via.placeholder.com/1920x1080/1a1a2e/4cc9f0?text=Sem+Imagem+de+Fundo",
+            avaliacao: filmeData.avaliacao || filmeData.rating || 0,
+            votos: filmeData.reviews || filmeData.vote_count || 0,
             elenco: filmeData.elenco || [],
             comentarios: filmeData.comentarios || []
           });
@@ -186,6 +260,34 @@ export default function Detalhes() {
                     }}>{genero}</span>
                   ))}
                 </div>
+                
+                {/* Botão de favoritos */}
+                <button
+                  onClick={toggleFavorito}
+                  style={{
+                    background: isFavorito ? '#ff6b6b' : 'rgba(76, 201, 240, 0.2)',
+                    border: isFavorito ? '2px solid #ff6b6b' : '2px solid #4cc9f0',
+                    padding: '0.8rem 1.5rem',
+                    borderRadius: '25px',
+                    color: '#fff',
+                    fontSize: '1rem',
+                    fontWeight: 'bold',
+                    cursor: 'pointer',
+                    transition: 'all 0.3s ease',
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: '0.5rem'
+                  }}
+                  onMouseOver={(e) => {
+                    e.target.style.transform = 'scale(1.05)';
+                  }}
+                  onMouseOut={(e) => {
+                    e.target.style.transform = 'scale(1)';
+                  }}
+                >
+                  <span>{isFavorito ? '❤️' : '🤍'}</span>
+                  {isFavorito ? 'Remover dos Favoritos' : 'Adicionar aos Favoritos'}
+                </button>
               </div>
             </div>
           </div>
@@ -233,6 +335,37 @@ export default function Detalhes() {
                     <span>{filme.avaliacao}</span>
                   </div>
                   <div style={{ color: '#ddd', fontSize: '1rem' }}>{filme.votos} avaliações</div>
+                </div>
+                
+                {/* Avaliação do usuário */}
+                <h2 style={{ fontSize: '1.5rem', marginBottom: '1rem', color: '#4cc9f0' }}>Sua Avaliação</h2>
+                <div style={{ marginBottom: '2rem' }}>
+                  <div style={{ display: 'flex', gap: '0.3rem', marginBottom: '1rem' }}>
+                    {[1, 2, 3, 4, 5].map((estrela) => (
+                      <button
+                        key={estrela}
+                        onClick={() => salvarAvaliacao(estrela)}
+                        onMouseEnter={() => setAvaliacaoHover(estrela)}
+                        onMouseLeave={() => setAvaliacaoHover(0)}
+                        style={{
+                          background: 'none',
+                          border: 'none',
+                          fontSize: '2rem',
+                          cursor: 'pointer',
+                          color: (avaliacaoHover || minhaAvaliacao) >= estrela ? '#f0d744' : '#666',
+                          transition: 'color 0.2s ease',
+                          padding: '0.2rem'
+                        }}
+                      >
+                        ★
+                      </button>
+                    ))}
+                  </div>
+                  {minhaAvaliacao > 0 && (
+                    <p style={{ color: '#4cc9f0', fontSize: '0.9rem' }}>
+                      Você avaliou este filme com {minhaAvaliacao} estrela{minhaAvaliacao > 1 ? 's' : ''}
+                    </p>
+                  )}
                 </div>
                 
                 {/* Ano de lançamento */}

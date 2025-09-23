@@ -1,11 +1,12 @@
 'use client';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import styles from './perfil.module.css';
 import Footer from '../../components/Footer';
 
 export default function Perfil() {
   // Estado para controlar o modal de edição
   const [mostrarModalEditar, setMostrarModalEditar] = useState(false);
+  const [avaliacoesRecentes, setAvaliacoesRecentes] = useState([]);
   
   // Estado para os dados do usuário (para permitir edição)
   const [usuario, setUsuario] = useState({
@@ -26,6 +27,28 @@ export default function Perfil() {
   const [nomeTemp, setNomeTemp] = useState(usuario.nome);
   const [usernameTemp, setUsernameTemp] = useState(usuario.username);
   const [bioTemp, setBioTemp] = useState(usuario.bio);
+
+  // Carregar avaliações do localStorage
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      const avaliacoes = JSON.parse(localStorage.getItem('avaliacoes') || '[]');
+      const favoritos = JSON.parse(localStorage.getItem('favoritos') || '[]');
+      
+      // Ordenar avaliações por data (mais recentes primeiro)
+      const avaliacoesOrdenadas = avaliacoes.sort((a, b) => new Date(b.data) - new Date(a.data));
+      setAvaliacoesRecentes(avaliacoesOrdenadas.slice(0, 5)); // Mostrar apenas as 5 mais recentes
+      
+      // Atualizar estatísticas
+      setUsuario(prev => ({
+        ...prev,
+        stats: {
+          ...prev.stats,
+          avaliados: avaliacoes.length,
+          favoritos: favoritos.length
+        }
+      }));
+    }
+  }, []);
 
   // Função para abrir o modal
   const abrirModalEditar = () => {
@@ -58,14 +81,6 @@ export default function Perfil() {
     { genero: "Ação", porcentagem: 20 },
     { genero: "Suspense", porcentagem: 15 },
     { genero: "Outros", porcentagem: 5 }
-  ];
-
-  // Filmes recentemente avaliados
-  const filmesRecentes = [
-    { titulo: "Oppenheimer", rating: 4.5, data: "10/09/2023" },
-    { titulo: "Barbie", rating: 4.0, data: "05/08/2023" },
-    { titulo: "Interestelar", rating: 5.0, data: "20/07/2023" },
-    { titulo: "Matrix", rating: 4.5, data: "15/06/2023" }
   ];
 
   // Listas criadas
@@ -244,19 +259,56 @@ export default function Perfil() {
         }}>
           <h2 style={{ fontSize: '1.5rem', marginBottom: '1.5rem', color: '#4cc9f0' }}>Avaliações Recentes</h2>
           <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
-            {filmesRecentes.map((filme, idx) => (
-              <div key={idx} style={{ 
+            {avaliacoesRecentes.length > 0 ? (
+              avaliacoesRecentes.map((avaliacao, idx) => (
+                <div key={idx} style={{ 
+                  background: 'rgba(20, 20, 40, 0.5)', 
+                  borderRadius: '10px', 
+                  padding: '1rem'
+                }}>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '0.5rem' }}>
+                    <span style={{ fontWeight: 'bold' }}>{avaliacao.titulo}</span>
+                    <span style={{ fontSize: '0.8rem', color: '#aaa' }}>
+                      {new Date(avaliacao.data).toLocaleDateString('pt-BR')}
+                    </span>
+                  </div>
+                  <div style={{ color: '#f0d744', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                    <span>{"★".repeat(avaliacao.nota)}</span>
+                    <span style={{ color: '#ccc', fontSize: '0.9rem' }}>
+                      {avaliacao.nota} estrela{avaliacao.nota > 1 ? 's' : ''}
+                    </span>
+                  </div>
+                  {avaliacao.generos && avaliacao.generos.length > 0 && (
+                    <div style={{ marginTop: '0.5rem', display: 'flex', gap: '0.3rem', flexWrap: 'wrap' }}>
+                      {avaliacao.generos.slice(0, 3).map((genero, gIdx) => (
+                        <span key={gIdx} style={{ 
+                          background: 'rgba(76, 201, 240, 0.2)', 
+                          padding: '0.2rem 0.5rem', 
+                          borderRadius: '10px', 
+                          fontSize: '0.7rem',
+                          color: '#4cc9f0'
+                        }}>
+                          {genero}
+                        </span>
+                      ))}
+                    </div>
+                  )}
+                </div>
+              ))
+            ) : (
+              <div style={{ 
                 background: 'rgba(20, 20, 40, 0.5)', 
                 borderRadius: '10px', 
-                padding: '1rem'
+                padding: '2rem',
+                textAlign: 'center',
+                color: '#aaa'
               }}>
-                <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '0.5rem' }}>
-                  <span style={{ fontWeight: 'bold' }}>{filme.titulo}</span>
-                  <span style={{ fontSize: '0.8rem', color: '#aaa' }}>{filme.data}</span>
-                </div>
-                <div style={{ color: '#f0d744' }}>{"★".repeat(Math.floor(filme.rating))}{filme.rating % 1 === 0.5 ? "½" : ""}</div>
+                <p>Você ainda não avaliou nenhum filme.</p>
+                <p style={{ fontSize: '0.9rem', marginTop: '0.5rem' }}>
+                  Vá para a página de detalhes de um filme e deixe sua avaliação!
+                </p>
               </div>
-            ))}
+            )}
           </div>
           <button style={{ 
             width: '100%', 

@@ -24,14 +24,6 @@ const getBaseUrl = () => {
   return possibleUrls[0];
 };
 
-// Função para obter token JWT do localStorage
-const getAuthToken = () => {
-  if (typeof window !== 'undefined') {
-    return localStorage.getItem('jwtToken');
-  }
-  return null;
-};
-
 console.log('Configurando API para conectar ao back-end...');
 
 // Criando instância do axios com configurações
@@ -44,7 +36,7 @@ const api = axios.create({
   }
 });
 
-// Interceptor para logs de requisição e autenticação JWT
+// Interceptor para logs de requisição
 api.interceptors.request.use(
   config => {
     // Verificar se há uma URL atualizada no localStorage a cada requisição
@@ -61,15 +53,6 @@ api.interceptors.request.use(
       const newUrl = config.url.replace('/filmes', '/movies');
       console.log(`Ajustando endpoint de ${config.url} para ${newUrl}`);
       config.url = newUrl;
-    }
-    
-    // Adicionar token JWT ao cabeçalho de autorização, se disponível
-    const token = getAuthToken();
-    if (token) {
-      config.headers.Authorization = `Bearer ${token}`;
-      console.log('Token JWT adicionado ao cabeçalho da requisição');
-    } else {
-      console.log('Nenhum token JWT encontrado, requisição sem autenticação');
     }
     
     console.log(`Fazendo requisição para: ${config.baseURL}${config.url}`);

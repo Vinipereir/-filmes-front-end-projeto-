@@ -36,11 +36,16 @@ export default function Catalogo() {
         const dadosFormatados = Array.isArray(response.data) 
           ? response.data.map(filme => ({
               id: filme.id,
-              titulo: filme.titulo || filme.nome || 'Título não disponível',
-              imagem: filme.imagem || filme.poster || 'https://via.placeholder.com/200x300?text=Sem+Imagem',
-              genero: filme.genero || 'Não categorizado',
-              ano: filme.ano || filme.lancamento || new Date().getFullYear(),
-              rating: filme.rating || filme.avaliacao || 0
+              titulo: filme.title || filme.titulo || filme.nome || 'Título não disponível',
+              imagem: filme.imageUrl || filme.imagem || filme.poster || filme.posterUrl || 'https://via.placeholder.com/200x300?text=Sem+Imagem',
+              genero: filme.genre || filme.genero || 'Não categorizado',
+              generos: filme.generos || (filme.genre ? [filme.genre] : []),
+              ano: filme.releaseDate ? new Date(filme.releaseDate).getFullYear() : filme.ano || filme.lancamento || new Date().getFullYear(),
+              rating: filme.rating || filme.avaliacao || 0,
+              sinopse: filme.synopsis || filme.sinopse || filme.descricao || 'Sinopse não disponível',
+              lancamento: filme.releaseDate || filme.lancamento || filme.ano || new Date().getFullYear(),
+              avaliacao: filme.avaliacao || filme.rating || 0,
+              backdrop: filme.backdrop || filme.backdropUrl || filme.imageUrl || filme.imagem
             }))
           : [];
         
