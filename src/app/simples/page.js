@@ -1,5 +1,6 @@
 'use client';
 import { useState, useEffect } from 'react';
+import Footer from '../../components/Footer';
 
 export default function Simples() {
   const [filmes, setFilmes] = useState([]);
@@ -8,8 +9,8 @@ export default function Simples() {
   const [erro, setErro] = useState(null);
   const [generoSelecionado, setGeneroSelecionado] = useState('');
   
-  // Lista de gêneros que temos nos filmes
-  const generos = ["Ação", "Comédia", "Drama", "Ficção Científica", "Terror", "Romance", "Animação"];
+  // Lista de gêneros que temos nos filmes - baseado nos dados reais da API
+  const generos = ["Ação", "Comédia", "Drama", "Ficção Científica", "Terror", "Romance", "Animação", "Aventura", "Fantasia", "Thriller", "Crime", "Família"];
   
   // Buscar filmes do servidor quando o componente for montado
   useEffect(() => {
@@ -43,16 +44,22 @@ export default function Simples() {
   
   // Filtrar por gênero
   function filtrarPorGenero(genero) {
-    if (generoSelecionado === genero) {
-      // Se clicar no mesmo gênero, remove o filtro
+    if (genero === '') {
+      // Botão "Todos" - mostrar todos os filmes
+      setGeneroSelecionado('');
+      setFilmesExibidos(filmes);
+    } else if (generoSelecionado === genero) {
+      // Se clicar no mesmo gênero, remove o filtro (volta para "Todos")
       setGeneroSelecionado('');
       setFilmesExibidos(filmes);
     } else {
-      // Aplicar filtro por gênero
+      // Aplicar filtro por gênero - verificar tanto genero quanto generos
       setGeneroSelecionado(genero);
-      const filtrados = filmes.filter(filme => 
-        filme.genero.toLowerCase() === genero.toLowerCase()
-      );
+      const filtrados = filmes.filter(filme => {
+        const generoMatch = filme.genero?.toLowerCase() === genero.toLowerCase();
+        const generosMatch = filme.generos?.some(g => g.toLowerCase() === genero.toLowerCase());
+        return generoMatch || generosMatch;
+      });
       setFilmesExibidos(filtrados);
     }
   }
@@ -69,23 +76,21 @@ export default function Simples() {
         marginBottom: '30px',
         flexWrap: 'wrap'
       }}>
-        {generos.map((genero, index) => (
-          <button 
-            key={index}
-            onClick={() => filtrarPorGenero(genero)}
-            style={{
-              backgroundColor: generoSelecionado === genero ? '#007bff' : '#f0f0f0',
-              color: generoSelecionado === genero ? 'white' : 'black',
-              border: 'none',
-              borderRadius: '20px',
-              padding: '8px 16px',
-              cursor: 'pointer',
-              fontWeight: generoSelecionado === genero ? 'bold' : 'normal'
-            }}
-          >
-            {genero}
-          </button>
-        ))}
+        {/* Botão "Todos" */}
+        <button 
+          onClick={() => filtrarPorGenero('')}
+          style={{
+            backgroundColor: '#007bff',
+            color: 'white',
+            border: 'none',
+            borderRadius: '20px',
+            padding: '8px 16px',
+            cursor: 'pointer',
+            fontWeight: 'bold'
+          }}
+        >
+          Mostrar Todos os Filmes
+        </button>
       </div>
       
       {/* Mensagens de estado */}
@@ -190,6 +195,9 @@ export default function Simples() {
           )}
         </div>
       )}
+      
+      {/* Footer */}
+      <Footer />
     </div>
   );
 }

@@ -1,5 +1,6 @@
 import styles from './favoritos.module.css';
 import MovieImage from '../../components/MovieImage';
+import Footer from '../../components/Footer';
 
 export default function Favoritos() {
   const favoritos = [
@@ -142,6 +143,9 @@ export default function Favoritos() {
           }}>Explorar Catálogo</button>
         </div>
       )}
+      
+      {/* Footer */}
+      <Footer />
     </div>
   );
 }

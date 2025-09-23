@@ -7,6 +7,7 @@ import AlertaWrapper from '../../components/AlertaWrapper';
 import ConfiguracaoApi from '../../components/ConfiguracaoApi';
 import MovieImage from '../../components/MovieImage';
 import BackdropImage from '../../components/BackdropImage';
+import Footer from '../../components/Footer';
 
 export default function Detalhes() {
   const searchParams = useSearchParams();
@@ -261,6 +262,9 @@ export default function Detalhes() {
           </div>
         </>
       )}
+      
+      {/* Footer */}
+      <Footer />
       
       {/* Componente de alerta de conexão */}
       <AlertaWrapper />

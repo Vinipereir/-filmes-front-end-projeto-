@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react';
 import AlertaWrapper from '../components/AlertaWrapper';
 import ConfiguracaoApi from '../components/ConfiguracaoApi';
 import LoginForm from '../components/LoginForm';
+import Footer from '../components/Footer';
 import api from '../services/api';
 
 export default function Home() {
@@ -14,8 +15,8 @@ export default function Home() {
   const [erro, setErro] = useState(null);
   const [generoSelecionado, setGeneroSelecionado] = useState('');
   
-  // Lista de gêneros para os filtros
-  const generos = ["Ação", "Comédia", "Drama", "Ficção Científica", "Terror", "Romance", "Animação"];
+  // Lista de gêneros para os filtros - baseado nos dados reais da API
+  const generos = ["Ação", "Comédia", "Drama", "Ficção Científica", "Terror", "Romance", "Animação", "Aventura", "Fantasia", "Thriller", "Crime", "Família"];
   
   // Buscar filmes ao carregar o componente
   useEffect(() => {
@@ -81,17 +82,23 @@ export default function Home() {
   
   // Filtrar por gênero
   const filtrarPorGenero = (genero) => {
-    if (generoSelecionado === genero) {
-      // Se clicar no mesmo gênero, desseleciona
+    if (genero === '') {
+      // Botão "Todos" - mostrar todos os filmes
       setGeneroSelecionado('');
-      setFilmesExibidos(filmes); // Mostrar todos os filmes
+      setFilmesExibidos(filmes);
+    } else if (generoSelecionado === genero) {
+      // Se clicar no mesmo gênero, desseleciona (volta para "Todos")
+      setGeneroSelecionado('');
+      setFilmesExibidos(filmes);
     } else {
       // Selecionar o novo gênero
       setGeneroSelecionado(genero);
-      // Filtrar filmes pelo gênero selecionado
-      const filmesFiltrados = filmes.filter(filme => 
-        filme.genero.toLowerCase() === genero.toLowerCase()
-      );
+      // Filtrar filmes pelo gênero selecionado - verificar tanto genero quanto generos
+      const filmesFiltrados = filmes.filter(filme => {
+        const generoMatch = filme.genero?.toLowerCase() === genero.toLowerCase();
+        const generosMatch = filme.generos?.some(g => g.toLowerCase() === genero.toLowerCase());
+        return generoMatch || generosMatch;
+      });
       setFilmesExibidos(filmesFiltrados);
     }
   };
@@ -147,26 +154,24 @@ export default function Home() {
           WebkitOverflowScrolling: 'touch',
           msOverflowStyle: '-ms-autohiding-scrollbar'
         }}>
-          {generos.map((genero, idx) => (
-            <button 
-              key={idx} 
-              onClick={() => filtrarPorGenero(genero)}
-              style={{ 
-                background: generoSelecionado === genero ? '#4cc9f0' : 'rgba(30, 30, 50, 0.7)', 
-                border: 'none',
-                padding: '0.8rem 1.5rem', 
-                borderRadius: '30px', 
-                color: generoSelecionado === genero ? '#fff' : '#ddd',
-                cursor: 'pointer',
-                whiteSpace: 'nowrap',
-                fontSize: '0.95rem',
-                fontWeight: '500',
-                transition: 'all 0.2s ease'
-              }}
-            >
-              {genero}
-            </button>
-          ))}
+          {/* Botão "Todos" */}
+          <button 
+            onClick={() => filtrarPorGenero('')}
+            style={{ 
+              background: '#4cc9f0', 
+              border: 'none',
+              padding: '0.8rem 1.5rem', 
+              borderRadius: '30px', 
+              color: '#fff',
+              cursor: 'pointer',
+              whiteSpace: 'nowrap',
+              fontSize: '0.95rem',
+              fontWeight: 'bold',
+              transition: 'all 0.2s ease'
+            }}
+          >
+            Mostrar Todos os Filmes
+          </button>
         </div>
         
         {/* Estado de carregando */}
@@ -224,6 +229,9 @@ export default function Home() {
           ))}
         </div>
       </main>
+      
+      {/* Footer */}
+      <Footer />
       
       {/* Componente de alerta de conexão */}
       <AlertaWrapper />

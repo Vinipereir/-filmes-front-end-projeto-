@@ -5,6 +5,7 @@ import api from '../../services/api';
 import AlertaWrapper from '../../components/AlertaWrapper';
 import ConfiguracaoApi from '../../components/ConfiguracaoApi';
 import MovieImage from '../../components/MovieImage';
+import Footer from '../../components/Footer';
 import axios from 'axios';
 
 export default function Catalogo() {
@@ -16,8 +17,8 @@ export default function Catalogo() {
   const [carregando, setCarregando] = useState(true);
   const [erro, setErro] = useState(null);
   
-  // Lista de gêneros que usaremos para os filtros
-  const generos = ["Ação", "Comédia", "Drama", "Ficção Científica", "Terror", "Romance", "Animação"];
+  // Lista de gêneros que usaremos para os filtros - baseado nos dados reais da API
+  const generos = ["Ação", "Comédia", "Drama", "Ficção Científica", "Terror", "Romance", "Animação", "Aventura", "Fantasia", "Thriller", "Crime", "Família"];
   
   // Buscar filmes ao carregar o componente
   useEffect(() => {
@@ -95,12 +96,8 @@ export default function Catalogo() {
       );
     }
     
-    // Filtrar por gênero
-    if (generoSelecionado) {
-      filmesFiltrados = filmesFiltrados.filter(filme => 
-        filme.genero === generoSelecionado
-      );
-    }
+    // Como removemos os filtros de gênero, não há necessidade de filtrar por gênero
+    // Sempre mostra todos os filmes (ou filtrados apenas por busca)
     
     setFilmesExibidos(filmesFiltrados);
   };
@@ -124,15 +121,20 @@ export default function Catalogo() {
   
   // Filtrar por gênero
   const handleGeneroClick = (genero) => {
-    if (generoSelecionado === genero) {
-      // Se clicar no mesmo gênero, desseleciona
+    if (genero === '') {
+      // Botão "Todos" - mostrar todos os filmes
+      setGeneroSelecionado('');
+    } else if (generoSelecionado === genero) {
+      // Se clicar no mesmo gênero, desseleciona (volta para "Todos")
       setGeneroSelecionado('');
     } else {
       // Selecionar o novo gênero
       setGeneroSelecionado(genero);
     }
     // Aplicar o filtro após atualizar o estado
-    setTimeout(filtrarFilmes, 0);
+    setTimeout(() => {
+      filtrarFilmes();
+    }, 0);
   };
 
   return (
@@ -159,22 +161,21 @@ export default function Catalogo() {
         <div style={{ display: 'flex', gap: '1rem', alignItems: 'center', flexWrap: 'wrap' }}>
           <h3 style={{ margin: 0, fontSize: '1.2rem' }}>Filtrar por:</h3>
           <div style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap' }}>
-            {generos.map((genero, idx) => (
-              <button 
-                key={idx} 
-                onClick={() => handleGeneroClick(genero)}
-                style={{ 
-                  background: generoSelecionado === genero ? '#4cc9f0' : 'transparent', 
-                  border: '1px solid #4cc9f0', 
-                  padding: '0.5rem 1rem', 
-                  borderRadius: '20px', 
-                  color: generoSelecionado === genero ? '#fff' : '#4cc9f0',
-                  cursor: 'pointer'
-                }}
-              >
-                {genero}
-              </button>
-            ))}
+            {/* Botão "Todos" */}
+            <button 
+              onClick={() => handleGeneroClick('')}
+              style={{ 
+                background: '#4cc9f0', 
+                border: '1px solid #4cc9f0', 
+                padding: '0.5rem 1rem', 
+                borderRadius: '20px', 
+                color: '#fff',
+                cursor: 'pointer',
+                fontWeight: 'bold'
+              }}
+            >
+              Mostrar Todos os Filmes
+            </button>
           </div>
         </div>
         <div style={{ display: 'flex', gap: '1rem' }}>
@@ -279,6 +280,9 @@ export default function Catalogo() {
           ))}
         </div>
       )}
+      
+      {/* Footer */}
+      <Footer />
       
       {/* Componente de alerta de conexão */}
       <AlertaWrapper />

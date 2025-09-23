@@ -1,8 +1,14 @@
+'use client';
+import { useState } from 'react';
 import styles from './perfil.module.css';
+import Footer from '../../components/Footer';
 
 export default function Perfil() {
-  // Dados de exemplo de um usuário
-  const usuario = {
+  // Estado para controlar o modal de edição
+  const [mostrarModalEditar, setMostrarModalEditar] = useState(false);
+  
+  // Estado para os dados do usuário (para permitir edição)
+  const [usuario, setUsuario] = useState({
     nome: "Maria Silva",
     username: "MariaFilmes",
     avatar: "https://randomuser.me/api/portraits/women/44.jpg",
@@ -14,6 +20,35 @@ export default function Perfil() {
       avaliados: 86,
       listas: 5
     }
+  });
+
+  // Estados temporários para edição
+  const [nomeTemp, setNomeTemp] = useState(usuario.nome);
+  const [usernameTemp, setUsernameTemp] = useState(usuario.username);
+  const [bioTemp, setBioTemp] = useState(usuario.bio);
+
+  // Função para abrir o modal
+  const abrirModalEditar = () => {
+    setNomeTemp(usuario.nome);
+    setUsernameTemp(usuario.username);
+    setBioTemp(usuario.bio);
+    setMostrarModalEditar(true);
+  };
+
+  // Função para salvar as alterações
+  const salvarAlteracoes = () => {
+    setUsuario(prev => ({
+      ...prev,
+      nome: nomeTemp,
+      username: usernameTemp,
+      bio: bioTemp
+    }));
+    setMostrarModalEditar(false);
+  };
+
+  // Função para cancelar edição
+  const cancelarEdicao = () => {
+    setMostrarModalEditar(false);
   };
 
   // Estatísticas e gráficos
@@ -69,10 +104,45 @@ export default function Perfil() {
             border: '4px solid #4cc9f0'
           }} 
         />
-        <div>
-          <h1 style={{ fontSize: '2.5rem', marginBottom: '0.5rem' }}>{usuario.nome}</h1>
-          <div style={{ color: '#4cc9f0', marginBottom: '0.5rem', fontSize: '1.2rem' }}>@{usuario.username}</div>
-          <div style={{ color: '#aaa', marginBottom: '1rem' }}>{usuario.membro}</div>
+        <div style={{ flex: 1 }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '1rem' }}>
+            <div>
+              <h1 style={{ fontSize: '2.5rem', marginBottom: '0.5rem' }}>{usuario.nome}</h1>
+              <div style={{ color: '#4cc9f0', marginBottom: '0.5rem', fontSize: '1.2rem' }}>@{usuario.username}</div>
+              <div style={{ color: '#aaa', marginBottom: '1rem' }}>{usuario.membro}</div>
+            </div>
+            <button 
+              onClick={abrirModalEditar}
+              style={{
+                background: '#4cc9f0',
+                border: 'none',
+                borderRadius: '8px',
+                padding: '0.8rem 1.5rem',
+                color: '#fff',
+                fontSize: '1rem',
+                fontWeight: 'bold',
+                cursor: 'pointer',
+                display: 'flex',
+                alignItems: 'center',
+                gap: '0.5rem',
+                transition: 'all 0.3s ease',
+                boxShadow: '0 2px 8px rgba(76, 201, 240, 0.3)'
+              }}
+              onMouseOver={(e) => {
+                e.target.style.background = '#3ba3cc';
+                e.target.style.transform = 'translateY(-2px)';
+                e.target.style.boxShadow = '0 4px 12px rgba(76, 201, 240, 0.4)';
+              }}
+              onMouseOut={(e) => {
+                e.target.style.background = '#4cc9f0';
+                e.target.style.transform = 'translateY(0)';
+                e.target.style.boxShadow = '0 2px 8px rgba(76, 201, 240, 0.3)';
+              }}
+            >
+              <span>✏️</span>
+              Editar Perfil
+            </button>
+          </div>
           <p style={{ maxWidth: '600px', lineHeight: '1.6' }}>{usuario.bio}</p>
         </div>
       </div>
@@ -243,6 +313,174 @@ export default function Perfil() {
           }}>Criar nova lista</button>
         </div>
       </div>
+
+      {/* Modal de Edição de Perfil */}
+      {mostrarModalEditar && (
+        <div style={{
+          position: 'fixed',
+          top: 0,
+          left: 0,
+          right: 0,
+          bottom: 0,
+          backgroundColor: 'rgba(0, 0, 0, 0.8)',
+          display: 'flex',
+          justifyContent: 'center',
+          alignItems: 'center',
+          zIndex: 1000
+        }}>
+          <div style={{
+            background: 'linear-gradient(135deg, #1a1a2e 0%, #16213e 100%)',
+            borderRadius: '12px',
+            padding: '2rem',
+            width: '90%',
+            maxWidth: '500px',
+            boxShadow: '0 10px 30px rgba(0, 0, 0, 0.5)',
+            border: '1px solid rgba(76, 201, 240, 0.3)'
+          }}>
+            <h2 style={{ 
+              fontSize: '1.8rem', 
+              marginBottom: '1.5rem', 
+              color: '#4cc9f0',
+              textAlign: 'center'
+            }}>
+              ✏️ Editar Perfil
+            </h2>
+            
+            <div style={{ marginBottom: '1.5rem' }}>
+              <label style={{ 
+                display: 'block', 
+                marginBottom: '0.5rem', 
+                color: '#fff',
+                fontWeight: 'bold'
+              }}>
+                Nome:
+              </label>
+              <input
+                type="text"
+                value={nomeTemp}
+                onChange={(e) => setNomeTemp(e.target.value)}
+                style={{
+                  width: '100%',
+                  padding: '0.8rem',
+                  borderRadius: '8px',
+                  border: '1px solid rgba(76, 201, 240, 0.3)',
+                  background: 'rgba(30, 30, 50, 0.5)',
+                  color: '#fff',
+                  fontSize: '1rem'
+                }}
+                placeholder="Seu nome completo"
+              />
+            </div>
+
+            <div style={{ marginBottom: '1.5rem' }}>
+              <label style={{ 
+                display: 'block', 
+                marginBottom: '0.5rem', 
+                color: '#fff',
+                fontWeight: 'bold'
+              }}>
+                Username:
+              </label>
+              <input
+                type="text"
+                value={usernameTemp}
+                onChange={(e) => setUsernameTemp(e.target.value)}
+                style={{
+                  width: '100%',
+                  padding: '0.8rem',
+                  borderRadius: '8px',
+                  border: '1px solid rgba(76, 201, 240, 0.3)',
+                  background: 'rgba(30, 30, 50, 0.5)',
+                  color: '#fff',
+                  fontSize: '1rem'
+                }}
+                placeholder="@seuusername"
+              />
+            </div>
+
+            <div style={{ marginBottom: '2rem' }}>
+              <label style={{ 
+                display: 'block', 
+                marginBottom: '0.5rem', 
+                color: '#fff',
+                fontWeight: 'bold'
+              }}>
+                Biografia:
+              </label>
+              <textarea
+                value={bioTemp}
+                onChange={(e) => setBioTemp(e.target.value)}
+                rows={4}
+                style={{
+                  width: '100%',
+                  padding: '0.8rem',
+                  borderRadius: '8px',
+                  border: '1px solid rgba(76, 201, 240, 0.3)',
+                  background: 'rgba(30, 30, 50, 0.5)',
+                  color: '#fff',
+                  fontSize: '1rem',
+                  resize: 'vertical',
+                  fontFamily: 'Poppins, sans-serif'
+                }}
+                placeholder="Conte um pouco sobre você e seus gostos cinematográficos..."
+              />
+            </div>
+
+            <div style={{ 
+              display: 'flex', 
+              gap: '1rem', 
+              justifyContent: 'flex-end' 
+            }}>
+              <button
+                onClick={cancelarEdicao}
+                style={{
+                  background: 'transparent',
+                  border: '1px solid rgba(255, 255, 255, 0.3)',
+                  borderRadius: '8px',
+                  padding: '0.8rem 1.5rem',
+                  color: '#fff',
+                  fontSize: '1rem',
+                  cursor: 'pointer',
+                  transition: 'all 0.3s ease'
+                }}
+                onMouseOver={(e) => {
+                  e.target.style.background = 'rgba(255, 255, 255, 0.1)';
+                }}
+                onMouseOut={(e) => {
+                  e.target.style.background = 'transparent';
+                }}
+              >
+                Cancelar
+              </button>
+              <button
+                onClick={salvarAlteracoes}
+                style={{
+                  background: '#4cc9f0',
+                  border: 'none',
+                  borderRadius: '8px',
+                  padding: '0.8rem 1.5rem',
+                  color: '#fff',
+                  fontSize: '1rem',
+                  fontWeight: 'bold',
+                  cursor: 'pointer',
+                  transition: 'all 0.3s ease'
+                }}
+                onMouseOver={(e) => {
+                  e.target.style.background = '#3ba3cc';
+                }}
+                onMouseOut={(e) => {
+                  e.target.style.background = '#4cc9f0';
+                }}
+              >
+                💾 Salvar Alterações
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+      
+      {/* Footer */}
+      <Footer />
     </div>
   );
 }
