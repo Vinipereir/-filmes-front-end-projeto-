@@ -41,3 +41,14 @@ main {
   margin: 0;
   padding: 0;
 }
+
+/* Alinhamento dos cards - apenas para corrigir altura */
+[style*="grid-template-columns"] > a {
+  min-height: 380px;
+  display: flex;
+  flex-direction: column;
+}
+
+[style*="grid-template-columns"] > a > div:last-child {
+  margin-top: auto;
+}

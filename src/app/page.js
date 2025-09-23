@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react';
 import AlertaWrapper from '../components/AlertaWrapper';
 import ConfiguracaoApi from '../components/ConfiguracaoApi';
 import Footer from '../components/Footer';
+import MovieImage from '../components/MovieImage';
 import api from '../services/api';
 
 export default function Home() {
@@ -188,29 +189,60 @@ export default function Home() {
               transition: 'transform 0.3s ease, box-shadow 0.3s ease',
               cursor: 'pointer',
               textDecoration: 'none',
-              color: 'inherit'
+              color: 'inherit',
+              position: 'relative',
+              display: 'flex',
+              flexDirection: 'column'
             }}>
               {/* Badge do ano */}
-              <div style={{ position: 'absolute', top: '10px', right: '10px', background: 'rgba(0,0,0,0.7)', padding: '4px 8px', borderRadius: '12px', fontSize: '0.8rem' }}>
+              <div style={{ position: 'absolute', top: '10px', right: '10px', background: 'rgba(0,0,0,0.7)', padding: '4px 8px', borderRadius: '12px', fontSize: '0.8rem', zIndex: 1 }}>
                 {filme.ano}
               </div>
-              <img src={filme.imagem} alt={filme.titulo} style={{ width: '100%', height: '270px', objectFit: 'cover', display: 'block' }} />
-              <div style={{ padding: '12px 8px 0 8px', fontWeight: 'bold', fontSize: '1.1rem', color: '#4cc9f0' }}>{filme.titulo}</div>
-              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px', padding: '4px 0' }}>
-                <div style={{ color: '#f0d744' }}>★ {filme.rating}</div>
-                <div style={{ color: '#aaa', fontSize: '0.8rem' }}>({filme.reviews} avaliações)</div>
-              </div>
-              <div style={{ color: '#999', fontSize: '0.9rem', margin: '4px 0' }}>{filme.genero}</div>
-              <div style={{ display: 'flex', justifyContent: 'center', gap: '8px', padding: '8px 0' }}>
-                <button style={{
-                  background: 'transparent', 
-                  border: '1px solid #4cc9f0', 
-                  padding: '4px 12px', 
-                  borderRadius: '20px', 
-                  color: '#4cc9f0',
-                  cursor: 'pointer'
-                }}>Comentar</button>
-                <button style={{ background: '#4cc9f0', border: 'none', padding: '4px 12px', borderRadius: '20px', color: '#fff', cursor: 'pointer' }}>Favoritar</button>
+              <MovieImage 
+                src={filme.imagem} 
+                alt={filme.titulo} 
+                width="100%"
+                height="270px"
+                style={{ borderRadius: '12px 12px 0 0', flexShrink: 0 }}
+                fallbackTitle={filme.titulo}
+                loading="lazy"
+              />
+              <div style={{ flex: 1, display: 'flex', flexDirection: 'column', justifyContent: 'space-between', padding: '0 8px' }}>
+                <div>
+                  <div style={{ padding: '12px 0 0 0', fontWeight: 'bold', fontSize: '1.1rem', color: '#4cc9f0' }}>{filme.titulo}</div>
+                  <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px', padding: '4px 0' }}>
+                    <div style={{ color: '#f0d744' }}>★ {filme.rating}</div>
+                    <div style={{ color: '#aaa', fontSize: '0.8rem' }}>({filme.reviews} avaliações)</div>
+                  </div>
+                  <div style={{ color: '#999', fontSize: '0.9rem', margin: '4px 0' }}>{filme.genero}</div>
+                </div>
+                <div style={{ 
+                  display: 'flex', 
+                  justifyContent: 'center', 
+                  alignItems: 'center',
+                  gap: '8px', 
+                  padding: '8px 0',
+                  marginTop: 'auto'
+                }}>
+                  <button style={{
+                    background: 'transparent', 
+                    border: '1px solid #4cc9f0', 
+                    padding: '6px 12px', 
+                    borderRadius: '20px', 
+                    color: '#4cc9f0',
+                    cursor: 'pointer',
+                    fontSize: '0.9rem'
+                  }}>Comentar</button>
+                  <button style={{ 
+                    background: '#4cc9f0', 
+                    border: 'none', 
+                    padding: '6px 12px', 
+                    borderRadius: '20px', 
+                    color: '#fff', 
+                    cursor: 'pointer',
+                    fontSize: '0.9rem'
+                  }}>Favoritar</button>
+                </div>
               </div>
             </a>
           ))}

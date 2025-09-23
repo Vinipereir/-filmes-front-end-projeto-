@@ -257,14 +257,10 @@ export default function Catalogo() {
               position: 'relative',
               textDecoration: 'none',
               color: 'inherit',
-              display: 'block',
-              transform: 'translateY(0)',
-              '&:hover': {
-                transform: 'translateY(-5px)',
-                boxShadow: '0 10px 25px rgba(0, 0, 0, 0.4)'
-              }
+              display: 'flex',
+              flexDirection: 'column'
             }}>
-              <div style={{ position: 'absolute', top: '10px', right: '10px', background: 'rgba(0,0,0,0.7)', padding: '4px 8px', borderRadius: '12px', fontSize: '0.8rem' }}>
+              <div style={{ position: 'absolute', top: '10px', right: '10px', background: 'rgba(0,0,0,0.7)', padding: '4px 8px', borderRadius: '12px', fontSize: '0.8rem', zIndex: 1 }}>
                 {filme.ano}
               </div>
               <MovieImage
@@ -272,14 +268,18 @@ export default function Catalogo() {
                 alt={filme.titulo}
                 width="100%"
                 height="270px"
-                style={{ borderRadius: '12px 12px 0 0' }}
+                style={{ borderRadius: '12px 12px 0 0', flexShrink: 0 }}
                 fallbackTitle={filme.titulo}
                 loading="lazy"
               />
-              <div style={{ padding: '12px 8px 0 8px', fontWeight: 'bold', fontSize: '1.1rem', color: '#4cc9f0' }}>{filme.titulo}</div>
-              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px', padding: '4px 0' }}>
-                <div style={{ color: '#f0d744' }}>★ {filme.rating}</div>
-                <div style={{ color: '#aaa', fontSize: '0.8rem' }}>{filme.genero}</div>
+              <div style={{ flex: 1, display: 'flex', flexDirection: 'column', justifyContent: 'space-between', padding: '0 8px' }}>
+                <div>
+                  <div style={{ padding: '12px 0 0 0', fontWeight: 'bold', fontSize: '1.1rem', color: '#4cc9f0' }}>{filme.titulo}</div>
+                  <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px', padding: '4px 0', marginTop: 'auto' }}>
+                    <div style={{ color: '#f0d744' }}>★ {filme.rating}</div>
+                    <div style={{ color: '#aaa', fontSize: '0.8rem' }}>{filme.genero}</div>
+                  </div>
+                </div>
               </div>
             </a>
           ))}

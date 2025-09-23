@@ -138,7 +138,7 @@ export default function Favoritos() {
                     <span>Nos favoritos</span>
                   </div>
                 </div>
-                <div style={{ display: 'flex', gap: '1rem' }}>
+                <div style={{ display: 'flex', gap: '1rem', alignItems: 'center' }}>
                   <button 
                     onClick={() => window.location.href = `/detalhes?id=${favorito.id}`}
                     style={{ 
