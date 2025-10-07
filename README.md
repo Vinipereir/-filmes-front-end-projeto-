@@ -1,57 +1,85 @@
-# Projeto de Catálogo de Filmes
+# CineMagic — Front-end (Guia rápido)
 
-Este é um projeto front-end para exibição de um catálogo de filmes, desenvolvido com Next.js.
+Este README explica passo a passo como rodar o front-end do projeto CineMagic (Next.js) localmente.
 
-## Executando o Front-end
+## Pré-requisitos
 
-Para iniciar o servidor de desenvolvimento do front-end:
+- Node.js (recomendado 18+)
+- npm ou yarn
+- Um terminal (no Windows, PowerShell funciona bem)
 
-```bash
+## 1) Instalação
+
+Na raiz do projeto execute:
+
+```powershell
+npm install
+```
+
+## 2) Rodar em modo de desenvolvimento
+
+```powershell
 npm run dev
 ```
 
-O aplicativo estará disponível em [http://localhost:3000](http://localhost:3000).
+- A aplicação abrirá em `http://localhost:3000` por padrão.
+- Se quiser rodar em outra porta, o Next.js permite escolher quando a porta padrão estiver em uso.
 
-## Conectando ao Back-end
+## 3) Servidor de API de teste (incluso)
 
-Este front-end precisa se conectar a uma API de filmes para funcionar corretamente. Por padrão, o aplicativo tenta conectar a `http://localhost:4001` e outras portas alternativas.
+O repositório contém um servidor simples para testes: `servidor-api-filmes.js`.
 
-### Servidor de API para testes
+Para executá-lo na porta 4001:
 
-Um servidor API simples para testes está incluído no projeto. Para executá-lo:
-
-```bash
-# Para executar na porta padrão 4001
+```powershell
 node servidor-api-filmes.js
+```
 
-# Ou para executar em uma porta específica
+Ou em outra porta:
+
+```powershell
 node servidor-api-filmes.js 3001
 ```
 
-O servidor de testes fornecerá dois endpoints:
-- `GET /movies` - Lista todos os filmes
-- `GET /movies/:id` - Obtém detalhes de um filme específico
+Endpoints úteis do servidor de teste:
 
-### Configurando a conexão com o Back-end
+- `GET /movies` — obtém a lista de filmes
+- `GET /movies/:id` — detalhes do filme
 
-Se o back-end estiver rodando em um endereço diferente:
+## 4) Configurar a URL do backend no front
 
-1. Clique no ícone ⚙️ no canto inferior direito da aplicação
-2. Insira a URL correta do back-end (ex: `http://localhost:3001`)
-3. Clique em "Testar Conexão" para verificar
-4. Se a conexão for bem-sucedida, clique em "Salvar" para aplicar as alterações
+Se o backend (ou servidor de teste) rodar em outra porta/host, abra a aplicação e:
 
-## Learn More
+1. Clique no ícone ⚙️ no canto inferior direito
+2. Insira a URL do backend (por exemplo `http://localhost:3001`)
+3. Clique em "Testar Conexão" e depois em "Salvar"
 
-To learn more about Next.js, take a look at the following resources:
+A URL é salva em `localStorage` sob a chave `apiBaseUrl`.
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## 5) Perfil do usuário (localStorage)
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+- O editor de perfil salva os dados no `localStorage` com a chave `usuarioPerfil` (contendo `nome`, `username`, `bio` e `avatar`).
+- Avatares são convertidos para data URL e comprimidos antes de salvar; se a imagem for muito grande pode ocorrer erro de quota.
 
-## Deploy on Vercel
+## 6) Build e execução em produção
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+```powershell
+npm run build
+npm run start
+```
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+## 7) Troubleshooting
+
+- Imagens não aparecem: verifique se a API está acessível e se as URLs das imagens são válidas (verifique Network e CORS).
+- Perfil não persiste: verifique `localStorage` no DevTools e procure a chave `usuarioPerfil`.
+- Erros no build: leia o log do terminal (ex.: problemas de prerender com hooks do cliente como `useSearchParams`).
+
+## 8) Sugestões de melhoria
+
+- Substituir `<img>` por `next/image` para otimizações de performance.
+- Salvar avatars em backend/storage (S3) ao invés de `localStorage`.
+- Adicionar script `npm run api` para iniciar o servidor de teste automaticamente.
+
+---
+
+Se quiser, eu adapto esse README para incluir comandos específicos do seu ambiente (ex.: `npm run api` no `package.json`) ou criar um `env.example`.
