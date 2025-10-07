@@ -5,7 +5,15 @@ import AlertaWrapper from '../components/AlertaWrapper';
 import ConfiguracaoApi from '../components/ConfiguracaoApi';
 import Footer from '../components/Footer';
 import MovieImage from '../components/MovieImage';
-import api from '../services/api';
+// Substituído: uso direto de fetch em vez de importar a instância `api`
+
+const getBaseUrl = () => {
+  if (typeof window !== 'undefined') {
+    const saved = localStorage.getItem('apiBaseUrl');
+    if (saved) return saved;
+  }
+  return process.env.NEXT_PUBLIC_API_BASE_URL || 'http://localhost:4001';
+};
 
 export default function Home() {
   const [filmes, setFilmes] = useState([]);
@@ -24,13 +32,15 @@ export default function Home() {
         setCarregando(true);
         console.log('Iniciando busca de filmes...');
         
-        // Buscar filmes do back-end
-        const response = await api.get('/movies');
-        console.log('Dados recebidos do back-end:', response.data);
-        
+        // Buscar filmes do back-end (fetch direto)
+        const base = getBaseUrl();
+        const res = await fetch(`${base.replace(/\/+$/,'')}/movies`);
+        const data = await res.json();
+        console.log('Dados recebidos do back-end:', data);
+
         // Processar e formatar os dados recebidos
-        const dadosFormatados = Array.isArray(response.data) 
-          ? response.data.map(filme => ({
+        const dadosFormatados = Array.isArray(data) 
+          ? data.map(filme => ({
               id: filme.id,
               titulo: filme.title || filme.titulo || filme.nome || 'Título não disponível',
               imagem: filme.imageUrl || filme.imagem || filme.poster || filme.posterUrl || filme.poster_path || 'https://via.placeholder.com/200x300?text=Sem+Imagem',
