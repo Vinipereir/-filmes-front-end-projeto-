@@ -20,7 +20,7 @@ export default function Footer() {
         {/* Seção Sobre */}
         <div>
           <h3 style={{ color: '#4cc9f0', marginBottom: '1rem', fontSize: '1.2rem' }}>
-            🎬 CineMax
+            🎬 CineMagic
           </h3>
           <p style={{ color: '#ccc', lineHeight: '1.6', fontSize: '0.9rem' }}>
             Sua plataforma definitiva para descobrir, explorar e acompanhar os melhores filmes. 
