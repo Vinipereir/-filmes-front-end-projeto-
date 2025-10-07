@@ -55,7 +55,8 @@ export default function MovieImage({
           height: '100%',
           objectFit: 'cover',
           backgroundColor: '#1a1a2e',
-          display: isLoading ? 'none' : 'block',
+          opacity: isLoading ? 0 : 1,
+          transition: 'opacity 300ms ease',
           ...style
         }}
         className={className}

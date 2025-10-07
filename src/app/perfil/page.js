@@ -27,10 +27,30 @@ export default function Perfil() {
   const [nomeTemp, setNomeTemp] = useState(usuario.nome);
   const [usernameTemp, setUsernameTemp] = useState(usuario.username);
   const [bioTemp, setBioTemp] = useState(usuario.bio);
+  const [avatarTemp, setAvatarTemp] = useState(usuario.avatar);
+  const [avatarFile, setAvatarFile] = useState(null);
 
   // Carregar avaliações do localStorage
   useEffect(() => {
     if (typeof window !== 'undefined') {
+      // Carregar perfil salvo (se existir)
+      const savedPerfil = localStorage.getItem('usuarioPerfil');
+      if (savedPerfil) {
+        try {
+          const perfil = JSON.parse(savedPerfil);
+          setUsuario(prev => ({ ...prev, ...perfil }));
+          setAvatarTemp(perfil.avatar || prev.avatar);
+        } catch (err) {
+          console.warn('Erro ao parsear usuarioPerfil do localStorage', err);
+        }
+      } else {
+        // fallback para avatar isolado
+        const savedAvatar = localStorage.getItem('usuarioAvatar');
+        if (savedAvatar) {
+          setUsuario(prev => ({ ...prev, avatar: savedAvatar }));
+          setAvatarTemp(savedAvatar);
+        }
+      }
       const avaliacoes = JSON.parse(localStorage.getItem('avaliacoes') || '[]');
       const favoritos = JSON.parse(localStorage.getItem('favoritos') || '[]');
       
@@ -55,6 +75,7 @@ export default function Perfil() {
     setNomeTemp(usuario.nome);
     setUsernameTemp(usuario.username);
     setBioTemp(usuario.bio);
+    setAvatarTemp(usuario.avatar);
     setMostrarModalEditar(true);
   };
 
@@ -64,10 +85,62 @@ export default function Perfil() {
       ...prev,
       nome: nomeTemp,
       username: usernameTemp,
-      bio: bioTemp
+      bio: bioTemp,
+      avatar: avatarTemp
     }));
+    // Persistir perfil completo no localStorage
+    if (typeof window !== 'undefined') {
+      const perfilToSave = {
+        nome: nomeTemp,
+        username: usernameTemp,
+        bio: bioTemp,
+        avatar: avatarTemp
+      };
+      try {
+        localStorage.setItem('usuarioPerfil', JSON.stringify(perfilToSave));
+      } catch (err) {
+        console.warn('Erro ao salvar usuarioPerfil no localStorage', err);
+        // fallback: tentar salvar apenas o avatar comprimido (se houver arquivo)
+        if (avatarFile) {
+          compressImageFile(avatarFile, 600, 0.6).then((smallDataUrl) => {
+            try {
+              localStorage.setItem('usuarioAvatar', smallDataUrl);
+              console.log('Avatar comprimido salvo com sucesso como fallback');
+            } catch (err2) {
+              console.error('Ainda não foi possível salvar o avatar após compressão:', err2);
+            }
+          }).catch((cErr) => console.error('Erro ao comprimir imagem para fallback:', cErr));
+        }
+      }
+    }
     setMostrarModalEditar(false);
   };
+
+  // Helper para comprimir/redimensionar imagens no cliente (retorna dataURL)
+  function compressImageFile(file, maxWidth = 800, quality = 0.7) {
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.onerror = reject;
+      reader.onload = (ev) => {
+        const img = new Image();
+        img.onload = () => {
+          const ratio = img.width / img.height;
+          const width = Math.min(maxWidth, img.width);
+          const height = Math.round(width / ratio);
+          const canvas = document.createElement('canvas');
+          canvas.width = width;
+          canvas.height = height;
+          const ctx = canvas.getContext('2d');
+          ctx.drawImage(img, 0, 0, width, height);
+          const dataUrl = canvas.toDataURL('image/jpeg', quality);
+          resolve(dataUrl);
+        };
+        img.onerror = reject;
+        img.src = ev.target.result;
+      };
+      reader.readAsDataURL(file);
+    });
+  }
 
   // Função para cancelar edição
   const cancelarEdicao = () => {
@@ -398,6 +471,56 @@ export default function Perfil() {
               ✏️ Editar Perfil
             </h2>
             
+            <div style={{ marginBottom: '1.5rem' }}>
+              <label style={{ 
+                display: 'block', 
+                marginBottom: '0.5rem', 
+                color: '#fff',
+                fontWeight: 'bold'
+              }}>
+                Avatar:
+              </label>
+              <div style={{ display: 'flex', gap: '1rem', alignItems: 'center' }}>
+                <div style={{ width: '80px', height: '80px', borderRadius: '50%', overflow: 'hidden', border: '2px solid #4cc9f0' }}>
+                  <img src={avatarTemp} alt="Preview avatar" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                </div>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
+                  <input
+                    type="file"
+                    accept="image/*"
+                    onChange={(e) => {
+                      const file = e.target.files && e.target.files[0];
+                      if (!file) return;
+                      setAvatarFile(file);
+                      // Comprimir já ao selecionar
+                      compressImageFile(file, 800, 0.7).then((dataUrl) => {
+                        setAvatarTemp(dataUrl);
+                      }).catch((err) => {
+                        // fallback: mostrar preview sem compressão
+                        const reader = new FileReader();
+                        reader.onload = () => setAvatarTemp(reader.result);
+                        reader.readAsDataURL(file);
+                      });
+                    }}
+                  />
+                  <button
+                    onClick={() => {
+                      setAvatarFile(null);
+                      setAvatarTemp('https://randomuser.me/api/portraits/lego/1.jpg');
+                    }}
+                    style={{
+                      background: 'transparent',
+                      border: '1px solid rgba(255,255,255,0.2)',
+                      color: '#fff',
+                      padding: '6px 10px',
+                      borderRadius: '6px',
+                      cursor: 'pointer'
+                    }}
+                  >Remover</button>
+                </div>
+              </div>
+            </div>
+
             <div style={{ marginBottom: '1.5rem' }}>
               <label style={{ 
                 display: 'block', 

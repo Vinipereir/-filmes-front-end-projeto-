@@ -1,8 +1,9 @@
 'use client';
+export const dynamic = 'force-dynamic';
 import { useState, useEffect } from 'react';
 import { useSearchParams } from 'next/navigation';
 import styles from './detalhes.module.css';
-import api from '../../services/api';
+import api, { getImageUrl } from '../../services/api';
 import AlertaWrapper from '../../components/AlertaWrapper';
 import ConfiguracaoApi from '../../components/ConfiguracaoApi';
 import MovieImage from '../../components/MovieImage';
@@ -142,8 +143,8 @@ export default function Detalhes() {
             generos: filmeData.generos || (filmeData.genre ? [filmeData.genre] : [filmeData.genero]).filter(Boolean),
             sinopse: filmeData.synopsis || filmeData.sinopse || "Sinopse não disponível",
             diretor: filmeData.diretor || "Não informado",
-            imagem: filmeData.imageUrl || filmeData.imagem || filmeData.poster || "https://via.placeholder.com/200x300/1a1a2e/4cc9f0?text=Sem+Imagem",
-            backdrop: filmeData.backdrop || filmeData.backdropUrl || filmeData.imageUrl || filmeData.imagem || "https://via.placeholder.com/1920x1080/1a1a2e/4cc9f0?text=Sem+Imagem+de+Fundo",
+            imagem: getImageUrl(filmeData.imageUrl || filmeData.imagem || filmeData.poster) || "https://via.placeholder.com/200x300/1a1a2e/4cc9f0?text=Sem+Imagem",
+            backdrop: getImageUrl(filmeData.backdrop || filmeData.backdropUrl || filmeData.imageUrl || filmeData.imagem) || "https://via.placeholder.com/1920x1080/1a1a2e/4cc9f0?text=Sem+Imagem+de+Fundo",
             avaliacao: filmeData.avaliacao || filmeData.rating || 0,
             votos: filmeData.reviews || filmeData.vote_count || 0,
             elenco: filmeData.elenco || [],

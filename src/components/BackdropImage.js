@@ -1,5 +1,5 @@
 'use client';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 
 export default function BackdropImage({ 
   src, 
@@ -9,6 +9,7 @@ export default function BackdropImage({
 }) {
   const [imageError, setImageError] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
+  const [loadedSrc, setLoadedSrc] = useState(null);
 
   const handleImageError = () => {
     setImageError(true);
@@ -33,34 +34,39 @@ export default function BackdropImage({
     ...style
   };
 
-  if (imageError || !src) {
-    return (
-      <div style={{
-        ...backgroundStyle,
-        backgroundColor: fallbackColor,
-        backgroundImage: 'none'
-      }}></div>
-    );
-  }
+  // Preload background image using Image() so we can detect load/error
+  useEffect(() => {
+    let active = true;
+    if (!src) {
+      setImageError(true);
+      setIsLoading(false);
+      return;
+    }
+
+    const img = new Image();
+    img.src = src;
+    img.onload = () => {
+      if (!active) return;
+      setLoadedSrc(src);
+      setIsLoading(false);
+    };
+    img.onerror = () => {
+      if (!active) return;
+      setImageError(true);
+      setIsLoading(false);
+    };
+
+    return () => {
+      active = false;
+    };
+  }, [src]);
+
+  const showBackground = !imageError && loadedSrc;
 
   return (
-    <>
-      {isLoading && (
-        <div style={{
-          ...backgroundStyle,
-          backgroundColor: fallbackColor,
-          backgroundImage: 'none'
-        }}></div>
-      )}
-      <div 
-        style={{
-          ...backgroundStyle,
-          backgroundImage: `url(${src})`,
-          display: isLoading ? 'none' : 'block'
-        }}
-        onLoad={handleImageLoad}
-        onError={handleImageError}
-      ></div>
-    </>
+    <div style={{
+      ...backgroundStyle,
+      backgroundImage: showBackground ? `url(${loadedSrc})` : 'none'
+    }} aria-label={alt}></div>
   );
 }

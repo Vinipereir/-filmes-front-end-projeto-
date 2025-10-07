@@ -143,3 +143,29 @@ api.isAuthenticated = () => {
 };
 
 export default api;
+
+// Helper para normalizar URLs de imagem: se a URL for relativa, prefixa com a baseURL da API
+export function getImageUrl(path) {
+  try {
+    if (!path) return null;
+    if (typeof path !== 'string') return null;
+
+    // Já é uma URL absoluta
+    if (path.startsWith('http://') || path.startsWith('https://') || path.startsWith('//')) {
+      return path;
+    }
+
+    // Pegar a base atual configurada no axios ou recalcular
+    const base = (api && api.defaults && api.defaults.baseURL) ? api.defaults.baseURL : getBaseUrl();
+    if (!base) return path;
+
+    // Garantir uma única / entre base e path
+    const cleanedBase = base.replace(/\/+$/g, '');
+    const cleanedPath = path.startsWith('/') ? path : `/${path}`;
+
+    return `${cleanedBase}${cleanedPath}`;
+  } catch (err) {
+    console.error('Erro ao normalizar imagem:', err);
+    return path;
+  }
+}

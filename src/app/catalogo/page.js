@@ -1,7 +1,7 @@
 'use client';
 import { useState, useEffect } from 'react';
 import styles from './catalogo.module.css';
-import api from '../../services/api';
+import api, { getImageUrl } from '../../services/api';
 import AlertaWrapper from '../../components/AlertaWrapper';
 import ConfiguracaoApi from '../../components/ConfiguracaoApi';
 import MovieImage from '../../components/MovieImage';
@@ -37,7 +37,7 @@ export default function Catalogo() {
           ? response.data.map(filme => ({
               id: filme.id,
               titulo: filme.title || filme.titulo || filme.nome || 'Título não disponível',
-              imagem: filme.imageUrl || filme.imagem || filme.poster || filme.posterUrl || 'https://via.placeholder.com/200x300?text=Sem+Imagem',
+              imagem: getImageUrl(filme.imageUrl || filme.imagem || filme.poster || filme.posterUrl) || 'https://via.placeholder.com/200x300?text=Sem+Imagem',
               genero: filme.genre || filme.genero || 'Não categorizado',
               generos: filme.generos || (filme.genre ? [filme.genre] : []),
               ano: filme.releaseDate ? new Date(filme.releaseDate).getFullYear() : filme.ano || filme.lancamento || new Date().getFullYear(),
@@ -45,7 +45,7 @@ export default function Catalogo() {
               sinopse: filme.synopsis || filme.sinopse || filme.descricao || 'Sinopse não disponível',
               lancamento: filme.releaseDate || filme.lancamento || filme.ano || new Date().getFullYear(),
               avaliacao: filme.avaliacao || filme.rating || 0,
-              backdrop: filme.backdrop || filme.backdropUrl || filme.imageUrl || filme.imagem
+              backdrop: getImageUrl(filme.backdrop || filme.backdropUrl || filme.imageUrl || filme.imagem) || null
             }))
           : [];
         
